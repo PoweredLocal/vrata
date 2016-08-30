@@ -1,5 +1,3 @@
-app  artisan  bootstrap  ci  circle.yml  composer.json  composer.lock  config  database  Dockerfile  phpunit.xml  public  README.md  resources  storage  tests  vendor
-
 FROM dusterio/ubuntu-php7:latest
 
 # Set correct environment variables.
