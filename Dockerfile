@@ -11,6 +11,8 @@ ADD public /home/app/public
 ADD resources /home/app/resources
 ADD storage /home/app/storage
 ADD vendor /home/app/vendor
+ADD tests/ /home/app/tests
+ADD phpunit.xml /home/app/
 
 EXPOSE 80
 
