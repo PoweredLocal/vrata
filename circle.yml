@@ -14,7 +14,7 @@ dependencies:
 
 database:
   override:
-    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" app)" -- bash -c 'cd /home/app && php artisan migrate -n'
+    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" app)" -- bash -c 'export DB_HOST=127.0.0.1 && DB_DATABASE=circle_test && DB_USERNAME=ubuntu && cd /home/app && php artisan migrate --force'
 
 test:
   override:
