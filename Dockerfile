@@ -13,6 +13,7 @@ ADD storage /home/app/storage
 ADD vendor /home/app/vendor
 ADD tests/ /home/app/tests
 ADD phpunit.xml /home/app/
+ADD ci/start.sh /
 
 EXPOSE 80
 
