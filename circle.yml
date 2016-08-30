@@ -18,7 +18,7 @@ database:
 
 test:
   override:
-    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" app)" -- bash -c ''export DB_HOST=127.0.0.1 && export DB_DATABASE=circle_test && export DB_USERNAME=ubuntu && cd /home/app && php vendor/bin/phpunit'
+    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" app)" -- bash -c 'export DB_HOST=127.0.0.1 && export DB_DATABASE=circle_test && export DB_USERNAME=ubuntu && cd /home/app && php vendor/bin/phpunit'
 
 deployment:
   hub:
