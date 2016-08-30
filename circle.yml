@@ -14,7 +14,7 @@ dependencies:
 
 database:
   override:
-    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" app)" -- bash -c 'cd /home/app && php artisan migrate'
+    - sudo lxc-attach -n "$(docker inspect --format "{{.Id}}" app)" -- bash -c 'cd /home/app && php artisan migrate -n'
 
 test:
   override:
