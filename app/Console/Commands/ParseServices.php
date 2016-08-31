@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Exceptions\DataFormatException;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class ParseServices extends Command
 {
@@ -52,6 +53,8 @@ class ParseServices extends Command
      */
     public function handle()
     {
+        $output = [];
+
         foreach ($this->config['services'] as $serviceId => $settings) {
             $this->info('** Parsing ' . $serviceId);
 
@@ -71,9 +74,28 @@ class ParseServices extends Command
                 $response = $this->client->request('GET', $url . $docRoot . $api['path']);
                 $apiData = json_decode((string) $response->getBody(), true);
                 if ($apiData === null) throw new DataFormatException('Unable to get JSON response from ' . $serviceId);
-                //print_r($apiData);
+
+                foreach ($apiData['apis'] as $operation) {
+                    $pathElements = explode('.', $operation['path']);
+                    $operation['path'] = reset($pathElements);
+
+                    foreach ($operation['operations'] as $realOperation) {
+                        $output[] = [
+                            'method' => $realOperation['method'],
+                            'path' => $url . $operation['path']
+                        ];
+                    }
+                }
             }
         }
+
+        $this->info('Dumping route data to JSON file');
+
+        if (Storage::exists('routes.json')) {
+            if (! $this->confirm('File exists, we are about to overwrite it. Are you sure? [y|N]')) exit;
+        }
+
+        Storage::put('routes.json', json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         $this->info('Finished!');
     }

@@ -11,6 +11,10 @@ return [
         ]
     ],
 
+    'global' => [
+        'prefix' => 'v1'
+    ],
+
     'defaults' => [
         'doc_point' => '/api/doc',
         'domain' => env('DOMAIN', 'local.pwred.com')

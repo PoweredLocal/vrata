@@ -29,6 +29,7 @@ $app->withEloquent();
 
 $app->configure('auth');
 $app->configure('gateway');
+$app->configure('filesystems');
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,14 @@ $app->singleton(
     Illuminate\Contracts\Console\Kernel::class,
     App\Console\Kernel::class
 );
+
+$app->singleton('filesystem', function ($app) {
+    return $app->loadComponent(
+        'filesystems',
+        Illuminate\Filesystem\FilesystemServiceProvider::class,
+        'filesystem'
+    );
+});
 
 /*
 |--------------------------------------------------------------------------

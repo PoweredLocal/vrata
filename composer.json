@@ -11,7 +11,8 @@
         "laravel/passport": "^0.2.2",
         "appzcoder/lumen-routes-list": "^1.0",
         "dusterio/lumen-passport": "^0.1",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "league/flysystem": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
