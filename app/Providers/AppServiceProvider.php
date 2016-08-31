@@ -11,8 +11,15 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function boot()
     {
-        //
+        $this->registerRoutes();
+    }
+
+    /**
+     * @return void
+     */
+    protected function registerRoutes()
+    {
     }
 }
