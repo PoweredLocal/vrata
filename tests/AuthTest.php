@@ -20,7 +20,7 @@ class AuthTest extends TestCase
 
         DB::insert('insert into oauth_clients (user_id, name, password_client) values (?, ?, ?)', [$user->id, 'Test', 1]);
 
-        $response = $this->post('/oauth/token', [
+        $this->post('/oauth/token', [
             'grant_type' => 'password',
             'client_id' => $this->app['db.connection']->getPdo()->lastInsertId(),
             'username' => 'taylor@laravel.com',

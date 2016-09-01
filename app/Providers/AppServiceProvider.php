@@ -22,11 +22,13 @@ class AppServiceProvider extends ServiceProvider
             return RouteRegistry::initFromFile('routes.json');
         });
 
-        $this->app->singleton(Request::class, function () {
-            return $this->prepareRequest(Request::capture());
-        });
+        if ($this->app->environment() != 'testing') {
+            $this->app->singleton(Request::class, function () {
+                return $this->prepareRequest(Request::capture());
+            });
 
-        $this->app->alias(Request::class, 'request');
+            $this->app->alias(Request::class, 'request');
+        }
 
         $this->registerRoutes();
     }
@@ -45,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
             return $this->app->currentRoute;
         });
 
+        echo $request->getUri();
         return $request;
     }
 
