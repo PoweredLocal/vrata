@@ -12,6 +12,7 @@
         "appzcoder/lumen-routes-list": "^1.0",
         "dusterio/lumen-passport": "^0.1",
         "guzzlehttp/guzzle": "~6.0",
+        "webpatser/laravel-uuid": "2.*",
         "league/flysystem": "^1.0"
     },
     "require-dev": {

@@ -6,6 +6,7 @@ use App\Exceptions\DataFormatException;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Webpatser\Uuid\Uuid;
 
 class ParseServices extends Command
 {
@@ -81,8 +82,10 @@ class ParseServices extends Command
 
                     foreach ($operation['operations'] as $realOperation) {
                         $output[] = [
+                            'id' => (string)Uuid::generate(4),
                             'method' => $realOperation['method'],
-                            'path' => $url . $operation['path']
+                            'endpoint' => $url . $operation['path'],
+                            'path' => $this->config['global']['prefix'] . $operation['path']
                         ];
                     }
                 }

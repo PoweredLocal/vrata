@@ -12,7 +12,8 @@ return [
     ],
 
     'global' => [
-        'prefix' => 'v1'
+        'prefix' => 'v1',
+        'timeout' => 1000
     ],
 
     'defaults' => [
