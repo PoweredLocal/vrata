@@ -47,7 +47,6 @@ class AppServiceProvider extends ServiceProvider
             return $this->app->currentRoute;
         });
 
-        echo $request->getUri();
         return $request;
     }
 
