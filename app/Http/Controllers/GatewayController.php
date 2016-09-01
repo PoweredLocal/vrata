@@ -67,7 +67,9 @@ class GatewayController extends Controller
             $response = $e->getResponse();
         }
 
-        return new Response((string)$response->getBody(), $response->getStatusCode());
+        return new Response((string)$response->getBody(), $response->getStatusCode(), [
+            'Content-Type' => 'application/json'
+        ]);
     }
 
     /**
@@ -86,7 +88,9 @@ class GatewayController extends Controller
             $response = $e->getResponse();
         }
 
-        return new Response((string)$response->getBody(), $response->getStatusCode());
+        return new Response((string)$response->getBody(), $response->getStatusCode(), [
+            'Content-Type' => 'application/json'
+        ]);
     }
 
     /**

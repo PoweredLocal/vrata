@@ -10,7 +10,7 @@ rm -rf /home/app/storage/cache/*
 /usr/bin/php /home/app/artisan migrate
 
 # Import routes from services
-/usr/bin/php /home/app/artisa gateway:parse
+/usr/bin/php /home/app/artisan gateway:parse
 
 # Startup PHP FPM
 /bin/echo clear_env = no >> /etc/php/7.0/fpm/pool.d/www.conf
