@@ -12,7 +12,7 @@ php:
 before_script:
   - composer install --dev
   - mkdir -p build/logs
-  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml && vendor/bin/test-reporter
   - mysql -e 'create database travis;'
   - php artisan migrate
 
