@@ -15,7 +15,3 @@ before_script:
   - mysql -e 'create database travis;'
   - php artisan migrate
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml && vendor/bin/test-reporter
-
-addons:
-    code_climate:
-        repo_token: 51fe9ada287177249c1ec898ff9fd0460e8ae05efd7130b9a69a04eecd59e572
