@@ -13,3 +13,7 @@ before_script:
   - composer install --dev
   - mysql -e 'create database travis;'
   - php artisan migrate
+
+addons:
+    code_climate:
+        repo_token: 51fe9ada287177249c1ec898ff9fd0460e8ae05efd7130b9a69a04eecd59e572
