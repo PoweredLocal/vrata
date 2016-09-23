@@ -4,9 +4,9 @@ services:
   - mysql
 
 env:
-  - DB_USERNAME=root
-  - DB_HOST=127.0.0.1
-  - DB_PASSWORD=
+  - DB_USERNAME="root"
+  - DB_HOST="127.0.0.1"
+  - DB_PASSWORD=""
 
 php:
   - '5.6'
