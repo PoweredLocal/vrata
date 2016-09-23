@@ -14,4 +14,5 @@ before_script:
   - mkdir -p build/logs
   - mysql -e 'create database travis;'
   - php artisan migrate
-  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml && vendor/bin/test-reporter
+  - vendor/bin/phpunit
+  - vendor/bin/test-reporter
