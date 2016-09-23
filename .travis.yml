@@ -7,7 +7,6 @@ env:
   - DB_USERNAME="root" DB_HOST="127.0.0.1" DB_PASSWORD="" DB_DATABASE="travis"
 
 php:
-  - '5.6'
   - '7.0'
 
 before_script:

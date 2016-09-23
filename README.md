@@ -15,7 +15,7 @@ Vrata (Russian for 'gates') is a simple API gateway implemented in PHP7 with Lum
 
 ## Requirements and dependencies
 
-- PHP >= 5.6
+- PHP >= 7.0
 - Lumen 5.3
 - Guzzle 6
 - Laravel Passport
