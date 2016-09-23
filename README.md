@@ -33,6 +33,14 @@ Vrata (Russian for 'gates') is a simple API gateway implemented in PHP7 with Lum
 
 * work in progress
 
+## Installation
+
+You can either do a git clone or use composer (Packagist):
+
+```bash
+$ composer create-project poweredlocal/vrata
+```
+
 ## Copyright
 
 PoweredLocal 2016. Made in Melbourne
