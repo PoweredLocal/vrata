@@ -30,6 +30,7 @@ $app->withEloquent();
 $app->configure('auth');
 $app->configure('gateway');
 $app->configure('filesystems');
+$app->configure('cors');
 
 /*
 |--------------------------------------------------------------------------
@@ -76,9 +77,9 @@ $app->routeMiddleware([
     'helper' => \App\Http\Middleware\HelperMiddleware::class,
 ]);
 
-$app->middleware([
-    \App\Http\Middleware\AddCORSHeader::class
-]);
+//$app->middleware([
+//    \App\Http\Middleware\AddCORSHeader::class
+//]);
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,7 @@ $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
 $app->register(App\Providers\AppServiceProvider::class);
+$app->register(\Barryvdh\Cors\LumenServiceProvider::class);
 //$app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
@@ -109,7 +111,7 @@ $app->register(App\Providers\AppServiceProvider::class);
 |
 */
 
-$app->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['auth']], function ($app) {
+$app->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['cors', 'auth']], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
 

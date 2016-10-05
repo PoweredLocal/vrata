@@ -67,7 +67,7 @@ class AppServiceProvider extends ServiceProvider
 
             $this->app->{$method}($route->getPath(), [
                 'uses' => 'App\Http\Controllers\GatewayController@' . $method,
-                'middleware' => [ 'auth', 'helper:' . $route->getId() ]
+                'middleware' => [ 'cors', 'auth', 'helper:' . $route->getId() ]
             ]);
         });
     }

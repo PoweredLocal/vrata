@@ -13,7 +13,8 @@
         "dusterio/lumen-passport": "^0.1",
         "guzzlehttp/guzzle": "~6.0",
         "webpatser/laravel-uuid": "2.*",
-        "league/flysystem": "^1.0"
+        "league/flysystem": "^1.0",
+        "barryvdh/laravel-cors": "^0.8.2"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
