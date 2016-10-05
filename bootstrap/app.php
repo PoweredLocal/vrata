@@ -77,9 +77,10 @@ $app->routeMiddleware([
     'helper' => \App\Http\Middleware\HelperMiddleware::class,
 ]);
 
-//$app->middleware([
+$app->middleware([
+    \Barryvdh\Cors\HandleCors::class
 //    \App\Http\Middleware\AddCORSHeader::class
-//]);
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +112,7 @@ $app->register(App\Providers\AppServiceProvider::class);
 |
 */
 
-$app->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['cors', 'auth']], function ($app) {
+$app->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['auth']], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
 
