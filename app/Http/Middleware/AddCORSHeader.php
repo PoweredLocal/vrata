@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Http\Request;
 use Closure;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 class AddCORSHeader
 {
@@ -21,7 +21,7 @@ class AddCORSHeader
          * @var Response $response
          */
         $response = $next($request);
-        $response->header('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Origin', '*');
 
         return $response;
     }
