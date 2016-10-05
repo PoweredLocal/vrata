@@ -73,12 +73,12 @@ $app->singleton('filesystem', function ($app) {
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
-    'helper' => \App\Http\Middleware\HelperMiddleware::class
+    'helper' => \App\Http\Middleware\HelperMiddleware::class,
 ]);
 
-// $app->middleware([
-//    App\Http\Middleware\ExampleMiddleware::class
-// ]);
+$app->middleware([
+    \App\Http\Middleware\AddCORSHeader::class
+]);
 
 /*
 |--------------------------------------------------------------------------
