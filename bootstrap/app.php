@@ -78,7 +78,8 @@ $app->routeMiddleware([
 ]);
 
 $app->middleware([
-    \Barryvdh\Cors\HandleCors::class
+    \Barryvdh\Cors\HandleCors::class,
+    \Illuminate\Routing\Middleware\Throttle::class
 //    \App\Http\Middleware\AddCORSHeader::class
 ]);
 
