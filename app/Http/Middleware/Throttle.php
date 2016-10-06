@@ -1,6 +1,6 @@
 <?php
 
-namespace Illuminate\Routing\Middleware;
+namespace App\Http\Middleware;
 
 use Closure;
 use Carbon\Carbon;

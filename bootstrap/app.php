@@ -31,6 +31,7 @@ $app->configure('auth');
 $app->configure('gateway');
 $app->configure('filesystems');
 $app->configure('cors');
+$app->configure('cache');
 
 /*
 |--------------------------------------------------------------------------
@@ -79,7 +80,7 @@ $app->routeMiddleware([
 
 $app->middleware([
     \Barryvdh\Cors\HandleCors::class,
-    \Illuminate\Routing\Middleware\Throttle::class
+    \App\Http\Middleware\Throttle::class
 //    \App\Http\Middleware\AddCORSHeader::class
 ]);
 
