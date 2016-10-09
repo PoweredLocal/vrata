@@ -45,7 +45,9 @@ class AppServiceProvider extends ServiceProvider
             return $this->app->make('auth')->user();
         })->setRouteResolver(function () {
             return $this->app->currentRoute;
-        });
+        })->setTrustedProxies([
+            '10.7.0.0/16'
+        ]);
 
         return $request;
     }
