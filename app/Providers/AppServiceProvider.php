@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Http\Request;
 use App\Routing\RouteRegistry;
+use Dusterio\LumenPassport\LumenPassport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\HttpFoundation\File\File;
@@ -36,7 +37,8 @@ class AppServiceProvider extends ServiceProvider
 
         Passport::tokensExpireIn(Carbon::now()->addDays(15));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
-        Passport::pruneRevokedTokens();
+        //LumenPassport::prunePreviousTokens();
+        LumenPassport::allowMultipleTokens();
     }
 
     /**

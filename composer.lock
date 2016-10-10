@@ -171,23 +171,23 @@
         },
         {
             "name": "dusterio/lumen-passport",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dusterio/lumen-passport.git",
-                "reference": "a344c7346546b9c9f67bedc7689acf759ed11431"
+                "reference": "0f67835f807c6db9d71c6fe55e0a2b8794566bbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dusterio/lumen-passport/zipball/a344c7346546b9c9f67bedc7689acf759ed11431",
-                "reference": "a344c7346546b9c9f67bedc7689acf759ed11431",
+                "url": "https://api.github.com/repos/dusterio/lumen-passport/zipball/0f67835f807c6db9d71c6fe55e0a2b8794566bbc",
+                "reference": "0f67835f807c6db9d71c6fe55e0a2b8794566bbc",
                 "shasum": ""
             },
             "require": {
                 "illuminate/database": "~5.3",
                 "illuminate/support": "~5.3",
                 "laravel/passport": ">=0.2.2",
-                "php": ">=5.5.0"
+                "php": ">=5.6.4"
             },
             "type": "library",
             "autoload": {
@@ -213,7 +213,7 @@
                 "lumen",
                 "php"
             ],
-            "time": "2016-08-23 01:08:22"
+            "time": "2016-10-10 06:47:09"
         },
         {
             "name": "firebase/php-jwt",
