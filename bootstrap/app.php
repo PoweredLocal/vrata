@@ -24,11 +24,8 @@ $app = new Laravel\Lumen\Application(
 );
 
 $app->withFacades();
-
 $app->withEloquent();
-
 $app->configure('auth');
-$app->configure('gateway');
 $app->configure('filesystems');
 $app->configure('cors');
 $app->configure('cache');
@@ -99,7 +96,12 @@ $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
 $app->register(\Barryvdh\Cors\LumenServiceProvider::class);
-$app->register(App\Providers\AppServiceProvider::class);
+
+if ($app->environment() != 'testing') {
+    $app->configure('gateway');
+    $app->register(App\Providers\AppServiceProvider::class);
+}
+
 //$app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 

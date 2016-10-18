@@ -3,10 +3,10 @@
 namespace App\Exceptions;
 
 /**
- * Class NotImplementedExceptions
+ * Class NotImplementedException
  * @package App\Exceptions
  */
-class NotImplementedExceptions extends \Exception
+class NotImplementedException extends \Exception
 {
 
 }

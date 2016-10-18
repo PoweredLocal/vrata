@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Passport\Passport;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Config;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,19 +27,23 @@ class AppServiceProvider extends ServiceProvider
             return RouteRegistry::initFromFile('routes.json');
         });
 
-        if ($this->app->environment() != 'testing') {
-            $this->app->singleton(Request::class, function () {
-                return $this->prepareRequest(Request::capture());
-            });
+        $this->app->singleton(Request::class, function () {
+            return $this->prepareRequest(Request::capture());
+        });
 
-            $this->app->alias(Request::class, 'request');
-        }
+        $this->app->singleton(Client::class, function() {
+            return new Client([
+                'timeout' => Config::get('gateway.global.timeout'),
+                'connect_timeout' => Config::get('gateway.global.connect_timeout', Config::get('gateway.global.timeout'))
+            ]);
+        });
+
+        $this->app->alias(Request::class, 'request');
 
         $this->registerRoutes();
 
         Passport::tokensExpireIn(Carbon::now()->addDays(15));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
-        //LumenPassport::prunePreviousTokens();
         LumenPassport::allowMultipleTokens();
     }
 
@@ -72,13 +78,6 @@ class AppServiceProvider extends ServiceProvider
             return;
         }
 
-        $registry->getRoutes()->each(function ($route) {
-            $method = strtolower($route->getMethod());
-
-            $this->app->{$method}($route->getPath(), [
-                'uses' => 'App\Http\Controllers\GatewayController@' . $method,
-                'middleware' => [ 'auth', 'helper:' . $route->getId() ]
-            ]);
-        });
+        $registry->bind(app());
     }
 }

@@ -14,6 +14,11 @@ class Endpoint implements EndpointContract
     protected $url;
 
     /**
+     * @var int
+     */
+    protected $sequence;
+
+    /**
      * @var string
      */
     protected $method;
@@ -26,6 +31,7 @@ class Endpoint implements EndpointContract
     {
         $this->url = $options['url'];
         $this->method = $options['method'];
+        $this->sequence = $options['sequence'] ?? 0;
     }
 
     /**
@@ -60,6 +66,25 @@ class Endpoint implements EndpointContract
     public function setMethod($method)
     {
         $this->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSequence()
+    {
+        return $this->sequence;
+    }
+
+    /**
+     * @param $sequence
+     * @return $this
+     */
+    public function setSequence($sequence)
+    {
+        $this->sequence = $sequence;
 
         return $this;
     }

@@ -11,9 +11,42 @@ return [
         ]
     ],
 
+    // Array of extra (eg. aggregated) routes
+    'routes' => [
+        [
+            'aggregate' => true,
+            'method' => 'GET',
+            'path' => '/devices/{mac}/details',
+            'source' => [
+                'device' => [
+                    'service' => 'core',
+                    'method' => 'GET',
+                    'path' => 'devices/{mac}',
+                    'sequence' => 0
+                ],
+                'settings' => [
+                    'service' => 'core',
+                    'json_key' => 'network.settings',
+                    'method' => 'GET',
+                    'path' => 'networks/{device_network_id}',
+                    'sequence' => 1,
+                    'critical' => false
+                ],
+                'clients' => [
+                    'service' => 'login',
+                    'json_key' => 'network.clients',
+                    'method' => 'GET',
+                    'path' => 'visitors/{device_network_id}',
+                    'sequence' => 1,
+                    'critical' => false
+                ]
+            ]
+        ]
+    ],
+
     'global' => [
-        'prefix' => 'v1',
-        'timeout' => 1000
+        'prefix' => '/v1',
+        'timeout' => 1.0
     ],
 
     'defaults' => [

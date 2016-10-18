@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\DataFormatException;
-use App\Exceptions\NotImplementedExceptions;
+use App\Exceptions\NotImplementedException;
 use App\Routing\EndpointContract;
 use GuzzleHttp\Client;
 use App\Http\Request;
@@ -26,18 +26,16 @@ class GatewayController extends Controller
     /**
      * GatewayController constructor.
      * @param Request $request
+     * @param Client $client
      * @throws DataFormatException
-     * @throws NotImplementedExceptions
+     * @throws NotImplementedException
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request, Client $client)
     {
         if (empty($request->getRoute())) throw new DataFormatException('Unable to find original URI pattern');
-        if ($request->getRoute()->isAggregate()) throw new NotImplementedExceptions('Aggregate routes are not supported yet');
 
         $this->endpoint = $request->getRoute()->getEndpoints()->first();
-        $this->client = new Client([
-            'timeout'  => Config::get('gateway.global.timeout'),
-        ]);
+        $this->client = $client;
     }
 
     /**
@@ -63,11 +61,15 @@ class GatewayController extends Controller
                     'X-User' => $request->user()->id
                 ]
             ]);
+
+            $status = $response->getStatusCode();
+            $response = (string) $response->getBody();
         } catch (RequestException $e) {
-            $response = $e->getResponse();
+            $status = 500;
+            $response = $e->getResponse() ?? get_class($e);
         }
 
-        return new Response((string)$response->getBody(), $response->getStatusCode(), [
+        return new Response($response, $status, [
             'Content-Type' => 'application/json'
         ]);
     }
@@ -84,11 +86,15 @@ class GatewayController extends Controller
                     'X-User' => $request->user()->id
                 ]
             ]);
+
+            $status = $response->getStatusCode();
+            $response = (string) $response->getBody();
         } catch (RequestException $e) {
-            $response = $e->getResponse();
+            $status = 500;
+            $response = $e->getResponse() ?? get_class($e);
         }
 
-        return new Response((string)$response->getBody(), $response->getStatusCode(), [
+        return new Response($response, $status, [
             'Content-Type' => 'application/json'
         ]);
     }

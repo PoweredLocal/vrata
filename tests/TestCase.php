@@ -52,6 +52,12 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
             $cookies, $files, $server, $content
         );
 
+        $this->app->singleton(\App\Http\Request::class, function () use ($request) {
+            return $request;
+        });
+
+        $this->app->alias(\App\Http\Request::class, 'request');
+
         return $this->response = $this->app->prepareResponse(
             $this->app->handle($request)
         );

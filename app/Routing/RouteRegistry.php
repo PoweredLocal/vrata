@@ -3,6 +3,8 @@
 namespace App\Routing;
 
 use Illuminate\Support\Facades\Storage;
+use Laravel\Lumen\Application;
+use Webpatser\Uuid\Uuid;
 
 /**
  * Class RouteRegistry
@@ -16,11 +18,46 @@ class RouteRegistry
     protected $routes = [];
 
     /**
+     * RouteRegistry constructor.
+     */
+    public function __construct()
+    {
+        $this->parseConfigRoutes();
+    }
+
+    /**
      * @param RouteContract $route
      */
     public function addRoute(RouteContract $route)
     {
         $this->routes[] = $route;
+    }
+
+    /**
+     * @return void
+     */
+    private function parseConfigRoutes()
+    {
+        $routes = config('gateway.routes');
+        if (empty($routes)) return;
+
+        collect($routes)->each(function ($route) {
+            $routeObject = new Route([
+                'id' => (string)Uuid::generate(4),
+                'method' => $route['method'],
+                'path' => config('gateway.global.prefix', '/') . $route['path']
+            ]);
+
+            collect($route['source'])->each(function ($source) use ($routeObject) {
+                $routeObject->addEndpoint(new Endpoint([
+                    'method' => $source['method'],
+                    'url' => $source['service'] . $source['path'],
+                    'sequence' => $source['sequence'] ?? 0
+                ]));
+            });
+
+            $this->addRoute($routeObject);
+        });
     }
 
     /**
@@ -47,6 +84,21 @@ class RouteRegistry
     {
         return collect($this->routes)->first(function ($route) use ($id) {
             return $route->getId() == $id;
+        });
+    }
+
+    /**
+     * @param Application $app
+     */
+    public function bind(Application $app)
+    {
+        $this->getRoutes()->each(function ($route) use ($app) {
+            $method = strtolower($route->getMethod());
+
+            $app->{$method}($route->getPath(), [
+                'uses' => 'App\Http\Controllers\GatewayController@' . $method,
+                'middleware' => [ 'auth', 'helper:' . $route->getId() ]
+            ]);
         });
     }
 
