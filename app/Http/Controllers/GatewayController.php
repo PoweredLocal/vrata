@@ -6,9 +6,9 @@ use App\Exceptions\DataFormatException;
 use App\Exceptions\NotImplementedException;
 use App\Routing\EndpointContract;
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise;
 use App\Http\Request;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Response;
 
 class GatewayController extends Controller
@@ -19,9 +19,9 @@ class GatewayController extends Controller
     protected $client;
 
     /**
-     * @var EndpointContract
+     * @var array EndpointContract
      */
-    protected $endpoint;
+    protected $endpoints;
 
     /**
      * GatewayController constructor.
@@ -34,7 +34,14 @@ class GatewayController extends Controller
     {
         if (empty($request->getRoute())) throw new DataFormatException('Unable to find original URI pattern');
 
-        $this->endpoint = $request->getRoute()->getEndpoints()->first();
+        $this->endpoints = $request
+            ->getRoute()
+            ->getEndpoints()
+            ->groupBy(function ($endpoint) {
+                return $endpoint->getSequence();
+            })
+            ->sort();
+
         $this->client = $client;
     }
 
@@ -80,8 +87,22 @@ class GatewayController extends Controller
      */
     public function index(Request $request)
     {
+        $this->endpoints->each(function($batch, $sequence) {
+            $promises = $batch->reduce(function($carry, $endpoint) {
+                $carry[$endpoint->getAlias()] = $this->client->getAsync($endpoint->getUrl());
+                return $carry;
+            }, []);
+
+            $responses = Promise\settle($promises)->wait();
+
+            foreach ($responses as $key => $response) {
+                // Start making requests, collect responses to some array
+            }
+        });
+
+        // When all is done, generate final output based on response array
         try {
-            $response = $this->client->get($this->endpoint->getUrl(), [
+            $response = $this->client->get($this->endpoints->first()->first()->getUrl(), [
                 'headers' => [
                     'X-User' => $request->user()->id
                 ]

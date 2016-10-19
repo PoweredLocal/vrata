@@ -5,9 +5,16 @@ use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 
 class RoutingTest extends TestCase {
     use \Laravel\Lumen\Testing\DatabaseTransactions;
+
+    /**
+     * @var array
+     */
+    protected $history = [];
 
     protected $mockRoutes = ['gateway' => [
         'services' => [
@@ -85,27 +92,47 @@ class RoutingTest extends TestCase {
 
         $this->app->make(RouteRegistry::class)->bind(app());
 
-        $this->mockGuzzle();
+        $this->mockGuzzle([
+            new Response(200, [], json_encode(['id' => 5123123, 'title' => 'Some title', 'post_id' => 5])),
+            new Response(200, ['Content-Length' => 0], 'Lala'),
+            new Response(200, ['Content-Length' => 0], 'Lala'),
+            new Response(200, ['Content-Length' => 0], 'Lala')
+        ]);
+
         $this->get('/v1/somewhere/super-page/details', [
             'Authorization' => 'Bearer ' . $this->getUser()
         ]);
 
         $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertEquals(4, count($this->history));
     }
 
     /**
      * @return void
      */
-    private function mockGuzzle()
+    public function setUp()
     {
-        $mock = new MockHandler([
-            new Response(200, ['X-Foo' => 'Bar'], 'Lala'),
-            new Response(202, ['Content-Length' => 0], 'Lala')
-        ]);
+        parent::setUp();
 
-        $this->app->singleton(Client::class, function() use ($mock) {
+        // Erase request history
+        $this->history = [];
+    }
+
+    /**
+     * @param array $responses
+     * @return void
+     */
+    private function mockGuzzle(array $responses)
+    {
+        $history = Middleware::history($this->history);
+        $mock = new MockHandler($responses);
+
+        $stack = HandlerStack::create($mock);
+        $stack->push($history);
+
+        $this->app->singleton(Client::class, function() use ($stack) {
             return new Client([
-                'handler' => $mock
+                'handler' => $stack
             ]);
         });
     }

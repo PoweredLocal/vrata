@@ -41,18 +41,20 @@ class RouteRegistry
         $routes = config('gateway.routes');
         if (empty($routes)) return;
 
-        collect($routes)->each(function ($route) {
+        collect($routes)->each(function ($route, $key) {
             $routeObject = new Route([
                 'id' => (string)Uuid::generate(4),
                 'method' => $route['method'],
-                'path' => config('gateway.global.prefix', '/') . $route['path']
+                'path' => config('gateway.global.prefix', '/') . $route['path'],
+                'alias' => $key
             ]);
 
-            collect($route['source'])->each(function ($source) use ($routeObject) {
+            collect($route['source'])->each(function ($source, $alias) use ($routeObject) {
                 $routeObject->addEndpoint(new Endpoint([
                     'method' => $source['method'],
                     'url' => $source['service'] . $source['path'],
-                    'sequence' => $source['sequence'] ?? 0
+                    'sequence' => $source['sequence'] ?? 0,
+                    'alias' => $alias
                 ]));
             });
 

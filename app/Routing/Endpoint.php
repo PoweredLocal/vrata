@@ -14,6 +14,11 @@ class Endpoint implements EndpointContract
     protected $url;
 
     /**
+     * @var string
+     */
+    protected $alias;
+
+    /**
      * @var int
      */
     protected $sequence;
@@ -32,6 +37,7 @@ class Endpoint implements EndpointContract
         $this->url = $options['url'];
         $this->method = $options['method'];
         $this->sequence = $options['sequence'] ?? 0;
+        $this->alias = $options['alias'] ?? null;
     }
 
     /**
@@ -66,6 +72,25 @@ class Endpoint implements EndpointContract
     public function setMethod($method)
     {
         $this->method = $method;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAlias()
+    {
+        return $this->alias;
+    }
+
+    /**
+     * @param $alias
+     * @return $this
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
 
         return $this;
     }

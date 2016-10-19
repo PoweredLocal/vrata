@@ -29,4 +29,26 @@ interface EndpointContract
      * @return $this
      */
     public function setMethod($method);
+
+    /**
+     * @return string
+     */
+    public function getAlias();
+
+    /**
+     * @param string $alias
+     * @return $this
+     */
+    public function setAlias($alias);
+
+    /**
+     * @return int
+     */
+    public function getSequence();
+
+    /**
+     * @param int $sequence
+     * @return $this
+     */
+    public function setSequence($sequence);
 }
