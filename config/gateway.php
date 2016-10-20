@@ -45,7 +45,7 @@ $configTemplate = [
         'prefix' => '/v1',
         'timeout' => 1.0,
         'doc_point' => '/api/doc',
-        'domain' => env('DOMAIN', 'local.pwred.com')
+        'domain' => env('GATEWAY_DOMAIN', 'local')
     ],
 ];
 
