@@ -5,7 +5,7 @@ services:
 
 cache:
   directories:
-    - $HOME:/.composer/cache
+    - $HOME/.composer/cache
 
 php:
   - '7.0'
