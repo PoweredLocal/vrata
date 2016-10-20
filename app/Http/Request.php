@@ -33,4 +33,32 @@ class Request extends \Illuminate\Http\Request
     {
         return $this->currentRoute;
     }
+
+    /**
+     * Get the route handling the request.
+     *
+     * @param string|null $param
+     *
+     * @return \Illuminate\Routing\Route|object|string
+     */
+    public function route($param = null)
+    {
+        $route = call_user_func($this->getRouteResolver());
+
+        if (is_null($route) || is_null($param)) {
+            return $route;
+        } else {
+            return $route[2][$param];
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getRouteParams()
+    {
+        $route = call_user_func($this->getRouteResolver());
+
+        return $route ? $route[2] : [];
+    }
 }

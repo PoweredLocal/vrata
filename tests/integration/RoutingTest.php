@@ -104,7 +104,7 @@ class RoutingTest extends TestCase {
         ]);
 
         $this->assertEquals(200, $this->response->getStatusCode());
-        $this->assertEquals(4, count($this->history));
+        $this->assertEquals(3, count($this->history));
     }
 
     /**

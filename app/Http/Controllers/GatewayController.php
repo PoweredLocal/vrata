@@ -10,6 +10,7 @@ use GuzzleHttp\Promise;
 use App\Http\Request;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Route;
 
 class GatewayController extends Controller
 {
@@ -46,78 +47,62 @@ class GatewayController extends Controller
     }
 
     /**
-     * @param null $id
-     * @param Request $request
-     * @return array
-     */
-    public function get($id = null, Request $request)
-    {
-        return $id ? $this->show($id, $request) : $this->index($request);
-    }
-
-    /**
-     * @param $id
      * @param Request $request
      * @return Response
      */
-    public function show($id, Request $request)
+    public function get(Request $request)
     {
-        try {
-            $response = $this->client->get(str_replace('{id}', $id, $this->endpoint->getUrl()), [
-                'headers' => [
-                    'X-User' => $request->user()->id
-                ]
-            ]);
+        $output = [];
 
-            $status = $response->getStatusCode();
-            $response = (string) $response->getBody();
-        } catch (RequestException $e) {
-            $status = 500;
-            $response = $e->getResponse() ?? get_class($e);
-        }
+        $this->endpoints->each(function($batch, $sequence) use ($request, $output) {
+            $promises = $batch->reduce(function($carry, $endpoint) use ($request) {
+                $url = $this->injectParams($endpoint->getUrl(), $request->getRouteParams());
 
-        return new Response($response, $status, [
-            'Content-Type' => 'application/json'
-        ]);
-    }
+                $carry[$endpoint->getAlias()] = $this->client->getAsync($url, [
+                    'headers' => [
+                        'X-User' => $request->user()->id
+                    ]
+                ]);
 
-    /**
-     * @param Request $request
-     * @return Response
-     */
-    public function index(Request $request)
-    {
-        $this->endpoints->each(function($batch, $sequence) {
-            $promises = $batch->reduce(function($carry, $endpoint) {
-                $carry[$endpoint->getAlias()] = $this->client->getAsync($endpoint->getUrl());
                 return $carry;
             }, []);
 
             $responses = Promise\settle($promises)->wait();
 
             foreach ($responses as $key => $response) {
-                // Start making requests, collect responses to some array
+                if ($response['state'] == 'fulfilled') {
+                    $decoded = json_decode((string)$response['value']->getBody(), true);
+                    if ($decoded !== null) $output = array_merge_recursive($output, $decoded);
+                }
             }
         });
 
         // When all is done, generate final output based on response array
-        try {
-            $response = $this->client->get($this->endpoints->first()->first()->getUrl(), [
-                'headers' => [
-                    'X-User' => $request->user()->id
-                ]
-            ]);
-
+/*        try {
             $status = $response->getStatusCode();
             $response = (string) $response->getBody();
         } catch (RequestException $e) {
             $status = 500;
             $response = $e->getResponse() ?? get_class($e);
-        }
+        }*/
 
-        return new Response($response, $status, [
+        return new Response(json_encode($output), 200, [
             'Content-Type' => 'application/json'
         ]);
+    }
+
+    /**
+     * @param string $url
+     * @param array $params
+     * @return string
+     */
+    private function injectParams($url, array $params)
+    {
+        foreach ($params as $key => $value) {
+            $url = str_replace("{" . $key . "}", $value, $url);
+        }
+
+        return $url;
     }
 
     /**

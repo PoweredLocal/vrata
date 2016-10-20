@@ -32,6 +32,25 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
     }
 
     /**
+     * Prepare the given request instance for use with the application.
+     *
+     * @param   Request $request
+     * @return  Request
+     */
+    protected function prepareRequest(Request $request)
+    {
+        $request->setUserResolver(function () {
+            return $this->app->make('auth')->user();
+        })->setRouteResolver(function () {
+            return $this->app->currentRoute;
+        })->setTrustedProxies([
+            '10.7.0.0/16'
+        ]);
+
+        return $request;
+    }
+
+    /**
      * Call the given URI and return the Response.
      *
      * @param  string  $method
@@ -53,7 +72,7 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
         );
 
         $this->app->singleton(\App\Http\Request::class, function () use ($request) {
-            return $request;
+            return $this->prepareRequest($request);
         });
 
         $this->app->alias(\App\Http\Request::class, 'request');
