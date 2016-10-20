@@ -1,9 +1,5 @@
 language: php
 
-sudo: required
-group: edge
-dist: trusty
-
 services:
   - mysql
 
