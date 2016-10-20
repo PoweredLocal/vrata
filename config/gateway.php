@@ -45,7 +45,7 @@ $configTemplate = [
         'prefix' => '/v1',
         'timeout' => 1.0,
         'doc_point' => '/api/doc',
-        'domain' => env('GATEWAY_DOMAIN', 'local')
+        'domain' => 'local'
     ],
 ];
 

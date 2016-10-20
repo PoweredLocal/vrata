@@ -4,6 +4,9 @@ FROM dusterio/ubuntu-php7:latest
 # The latter is only necessary for test coverage, it will be disabled later on
 RUN apt-get -y install php-memcached php-xdebug
 
+# All files will be chowned later
+ENV CHOWN_TO_USER=www-data
+
 # Set correct environment variables.
 RUN mkdir -p /home/app
 ADD app /home/app/app
