@@ -38,6 +38,36 @@ $ docker run -d -e GATEWAY_SERVICES=... -e GATEWAY_GLOBAL=... -e GATEWAY_ROUTES=
 
 Where environment variables are JSON encoded settings (see configuration options below).
 
+## Configuration via environment variables
+
+### Lumen variables
+
+#### CACHE_DRIVER
+
+It's recommended to set this to 'memcached' or another shared cache supported by Lumen if you are running multiple instances of API gateway. API rate limitting relies on cache.
+
+#### DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USERNAME
+
+Standard Lumen variables for your database credentials. Use if you keep users in database 
+
+#### APP_KEY
+
+Lumen application key 
+
+### Gateway variables
+
+#### GATEWAY_SERVICES
+
+JSON array of microservices behind the API gateway
+
+#### GATEWAY_ROUTES
+
+JSON array of extra routes including any aggregate routes
+
+#### GATEWAY_GLOBAL
+
+JSON object with global settings
+
 ## Features
 
 - Built-in OAuth2 server to handle authentication for all incoming requests
