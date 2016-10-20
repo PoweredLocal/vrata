@@ -5,7 +5,6 @@ group: edge
 dist: trusty
 
 services:
-  - docker
   - mysql
 
 env:
