@@ -17,12 +17,14 @@ after_install:
   - mkdir -p build/logs
   - mysql -e 'create database travis;'
   - docker build -t pwred/vrata .
-  - docker run -d pwred/vrata
+  - docker run -d pwred/vrata --name app
 
 script:
-  - docker run pwred/vrata /bin/sh -c "cd /home/app; ./vendor/bin/phpunit"
-  - docker run pwred/vrata /bin/sh -c "cd /home/app; ./vendor/bin/test-reporter"
+  - docker run app /bin/sh -c "cd /home/app; export DB_HOST=127.0.0.1 && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; php artisan migrate"
+  - docker run app /bin/sh -c "cd /home/app; export DB_HOST=127.0.0.1 && export APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; ./vendor/bin/phpunit"
+  - docker run app /bin/sh -c "cd /home/app; ./vendor/bin/test-reporter"
 
 deploy:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker commit app pwred/vrata
   - docker push pwred/vrata
