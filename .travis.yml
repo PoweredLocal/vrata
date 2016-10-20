@@ -10,11 +10,19 @@ env:
 php:
   - '7.0'
 
-before_script:
-  - composer install --dev
+install:
+  - composer install
+
+after_install:
   - mkdir -p build/logs
   - mysql -e 'create database travis;'
-  - php artisan migrate
-  - vendor/bin/phpunit
-  - vendor/bin/test-reporter
+  - docker build -t pwred/vrata .
+  - docker run -d pwred/vrata
 
+script:
+  - docker run pwred/vrata /bin/sh -c "cd /home/app; ./vendor/bin/phpunit"
+  - docker run pwred/vrata /bin/sh -c "cd /home/app; ./vendor/bin/test-reporter"
+
+deploy:
+  - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push pwred/vrata
