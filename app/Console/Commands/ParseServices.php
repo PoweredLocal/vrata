@@ -59,8 +59,8 @@ class ParseServices extends Command
         foreach ($this->config['services'] as $serviceId => $settings) {
             $this->info('** Parsing ' . $serviceId);
 
-            $docRoot = $settings['doc_point'] ?? $this->config['defaults']['doc_point'];
-            $url = $settings['url'] ?? 'http://' . $serviceId . '.' . $this->config['defaults']['domain'];
+            $docRoot = $settings['doc_point'] ?? $this->config['global']['doc_point'];
+            $url = $settings['url'] ?? 'http://' . $serviceId . '.' . $this->config['global']['domain'];
             $response = $this->client->request('GET', $url . $docRoot);
 
             $data = json_decode((string) $response->getBody(), true);
