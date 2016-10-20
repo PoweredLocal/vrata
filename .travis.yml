@@ -1,10 +1,7 @@
 language: php
 
 services:
-  - mysql
-
-env:
-  - DB_USERNAME="root" DB_HOST="127.0.0.1" DB_PASSWORD="" DB_DATABASE="travis" APP_ENV="testing" APP_KEY="Idgz1PE3zO9iNc0E3oeH3CHDPX9MzZe4"
+  - docker
 
 php:
   - '7.0'
@@ -12,13 +9,13 @@ php:
 install:
   - composer install
   - mkdir -p build/logs
-  - mysql -h 127.0.0.1 -e 'create database travis;'
+  - docker run --name mariadb -e MYSQL_ROOT_PASSWORD= -e MYSQL_DATABASE=travis -d mariadb:tag
   - docker build -t pwred/vrata .
-  - docker run -d pwred/vrata --name app; sleep 10
+  - docker run -d pwred/vrata --link mariadb:mariadb --name app; sleep 10
 
 script:
-  - docker run app /bin/sh -c "cd /home/app; export DB_HOST=127.0.0.1 && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; php artisan migrate"
-  - docker run app /bin/sh -c "cd /home/app; export DB_HOST=127.0.0.1 && export APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; ./vendor/bin/phpunit"
+  - docker run app /bin/sh -c "cd /home/app; export DB_HOST=mariadb && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; php artisan migrate"
+  - docker run app /bin/sh -c "cd /home/app; export DB_HOST=mariadb && export APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; ./vendor/bin/phpunit"
   - docker run app /bin/sh -c "cd /home/app; ./vendor/bin/test-reporter"
 
 after_success:
