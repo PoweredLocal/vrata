@@ -11,7 +11,7 @@ install:
   - mkdir -p build/logs
   - docker run --name mariadb -e MYSQL_ROOT_PASSWORD= -e MYSQL_DATABASE=travis -d mariadb:latest
   - docker build -t pwred/vrata .
-  - docker run -d --name app pwred/vrata --link mariadb:mariadb -e GATEWAY_SERVICES="[]" -e DB_HOST=mariadb -e APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv -e DB_DATABASE=travis -e DB_USERNAME=root -e APP_ENV=testing; sleep 10
+  - docker run -d --name app --link mariadb:mariadb -e GATEWAY_SERVICES="[]" -e DB_HOST=mariadb -e APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv -e DB_DATABASE=travis -e DB_USERNAME=root -e APP_ENV=testing pwred/vrata; sleep 10
 
 script:
   - docker exec app /bin/sh -c "cd /home/app; env; php artisan migrate"
