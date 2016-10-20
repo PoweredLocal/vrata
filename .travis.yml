@@ -6,9 +6,6 @@ services:
 php:
   - '7.0'
 
-before_install:
-  - phpenv config-add .travis.php.ini
-
 install:
   - composer install --dev
   - mkdir -p build/logs
@@ -19,7 +16,7 @@ install:
 
 script:
   - docker exec app /bin/sh -c "cd /home/app; env; php artisan migrate"
-  - docker exec app /bin/sh -c "cd /home/app; ./vendor/bin/phpunit"
+  - docker exec app /bin/sh -c "cd /home/app; php -dextension=xdebug.so ./vendor/bin/phpunit"
   - docker exec app /bin/sh -c "cd /home/app; ./vendor/bin/test-reporter"
 
 after_success:

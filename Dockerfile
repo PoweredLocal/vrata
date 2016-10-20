@@ -1,7 +1,7 @@
 FROM dusterio/ubuntu-php7:latest
 
 # Install memcached extension
-RUN apt-get -y install php-memcached
+RUN apt-get -y install php-memcached php-xdebug
 
 # Set correct environment variables.
 RUN mkdir -p /home/app
