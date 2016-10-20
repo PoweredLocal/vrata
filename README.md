@@ -40,6 +40,8 @@ Where environment variables are JSON encoded settings (see configuration options
 
 ## Configuration via environment variables
 
+Ideally you won't need to touch any code at all. You could just snap the latest Docker image, set environment variables and done. API gateway is not a place to hold any business logic, API gateway is a smart proxy that can discover microservices, query them and process their responses with minimal adjustments.
+
 ### Lumen variables
 
 #### CACHE_DRIVER
