@@ -13,9 +13,11 @@ php:
 install:
   - composer install
   - mkdir -p build/logs
-  - mysql -e 'create database travis;'
   - docker build -t pwred/vrata .
   - docker run -d pwred/vrata --name app; sleep 10
+
+before_script:
+  - mysql -h 127.0.0.1 -e 'create database travis;'
 
 script:
   - docker run app /bin/sh -c "cd /home/app; export DB_HOST=127.0.0.1 && export DB_DATABASE=travis && export DB_USERNAME=root && export APP_ENV=testing; php artisan migrate"
