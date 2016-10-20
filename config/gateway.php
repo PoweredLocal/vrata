@@ -1,14 +1,10 @@
 <?php
 
-return [
+$configTemplate = [
+    // List of microservices behind the gateway
     'services' => [
-        'core' => [
-
-        ],
-
-        'login' => [
-
-        ]
+        'core' => [],
+        'login' => []
     ],
 
     // Array of extra (eg. aggregated) routes
@@ -44,13 +40,21 @@ return [
         ]
     ],
 
+    // Global parameters
     'global' => [
         'prefix' => '/v1',
-        'timeout' => 1.0
-    ],
-
-    'defaults' => [
+        'timeout' => 1.0,
         'doc_point' => '/api/doc',
         'domain' => env('DOMAIN', 'local.pwred.com')
-    ]
+    ],
 ];
+
+$sections = ['services', 'routes', 'global'];
+
+foreach ($sections as $section) {
+    $config = env('GATEWAY_' . strtoupper($section), false);
+    $config = $config ? json_decode($config) : $configTemplate[$section];
+    if ($config === null) throw new \Exception('Unable to decode GATEWAY_' . strtoupper($section) . ' variable');
+}
+
+return compact($sections);
