@@ -1,5 +1,9 @@
 language: php
 
+sudo: required
+
+dist: trusty
+
 services:
   - docker
   - mysql
