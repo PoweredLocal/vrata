@@ -1,7 +1,7 @@
 {
-    "name": "laravel/lumen",
-    "description": "The Laravel Lumen Framework.",
-    "keywords": ["framework", "laravel", "lumen"],
+    "name": "PoweredLocal/vrata",
+    "description": "API gateway written in PHP7 and Lumen",
+    "keywords": ["microservices", "gateway", "lumen"],
     "license": "MIT",
     "type": "project",
     "require": {
