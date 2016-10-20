@@ -6,6 +6,8 @@
 [![Total Downloads](https://poser.pugx.org/poweredlocal/vrata/downloads)](https://packagist.org/packages/poweredlocal/vrata)
 [![License](https://poser.pugx.org/poweredlocal/vrata/license)](https://packagist.org/packages/poweredlocal/vrata)
 
+[![Docker Hub](http://dockeri.co/image/pwred/vrata)](https://hub.docker.com/r/pwred/vrata/)
+
 API gateway implemented in PHP and Lumen
 
 ## Preface
@@ -23,12 +25,26 @@ Vrata (Russian for 'gates') is a simple API gateway implemented in PHP7 with Lum
 - Guzzle 6
 - Laravel Passport
 
+## Running as a Docker container
+
+Ideally, you want to run this as a stateless Docker container configured entirely by environment variables. Therefore, you don't even need to deploy 
+this code anywhere yourself - just use our [public Docker Hub image](https://hub.docker.com/r/pwred/vrata).
+
+Deploying it is as easy as:
+
+```bash
+$ docker run -d -e GATEWAY_SERVICES=... -e GATEWAY_GLOBAL=... -e GATEWAY_ROUTES=... pwred/vrata
+```
+
+Where environment variables are JSON encoded settings (see configuration options below).
+
 ## Features
 
 - Built-in OAuth2 server to handle authentication for all incoming requests
-- Aggregate queries (combine output from 2+ APIs) *
+- Aggregate queries (combine output from 2+ APIs)
+- Output restructuring 
 - Aggregate Swagger documentation (combine Swagger docs from underlying services) *
-- Sync and async outgoing requests *
+- Sync and async outgoing requests 
 - DNS service discovery *
 
 * work in progress
