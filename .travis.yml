@@ -9,7 +9,7 @@ php:
 install:
   - composer install
   - mkdir -p build/logs
-  - docker run --name mariadb -e MYSQL_ROOT_PASSWORD= -e MYSQL_DATABASE=travis -d mariadb:tag
+  - docker run --name mariadb -e MYSQL_ROOT_PASSWORD= -e MYSQL_DATABASE=travis -d mariadb:latest
   - docker build -t pwred/vrata .
   - docker run -d pwred/vrata --link mariadb:mariadb --name app; sleep 10
 
