@@ -16,12 +16,13 @@ install:
   - docker run --name mariadb -e MYSQL_ROOT_PASSWORD=travis -e MYSQL_DATABASE=travis -d mariadb:latest
   - docker build -t pwred/vrata .
   - docker ps
-  - docker run -d --name app --link mariadb -e CODECLIMATE_REPO_TOKEN=$CODECLIMATE_REPO_TOKEN -e GATEWAY_SERVICES="[]" -e GATEWAY_ROUTES="[]" -e DB_HOST=mariadb -e APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv -e DB_PASSWORD=travis -e DB_DATABASE=travis -e DB_USERNAME=root -e APP_ENV=testing pwred/vrata; sleep 10
+  - docker run -d --name app --link mariadb -e GATEWAY_SERVICES="[]" -e GATEWAY_ROUTES="[]" -e DB_HOST=mariadb -e APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv -e DB_PASSWORD=travis -e DB_DATABASE=travis -e DB_USERNAME=root -e APP_ENV=testing pwred/vrata; sleep 10
 
 script:
   - docker exec app /bin/sh -c "cd /home/app; env; php artisan migrate"
-  - docker exec app /bin/sh -c "cd /home/app; ./vendor/bin/phpunit"
-  - docker exec app /bin/sh -c "cd /home/app; ./vendor/bin/test-reporter; phpdismod xdebug"
+  - docker exec app /bin/sh -c "cd /home/app; ./vendor/bin/phpunit; phpdismod xdebug"
+  - docker cp app:/home/app/build/logs/clover.xml ./build/logs/clover.xml
+  - ./vendor/bin/test-reporter
 
 after_success:
   - docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
