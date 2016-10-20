@@ -1,6 +1,7 @@
 FROM dusterio/ubuntu-php7:latest
 
-# Install memcached extension
+# Install memcached & xdebug extensions
+# The latter is only necessary for test coverage, it will be disabled later on
 RUN apt-get -y install php-memcached php-xdebug
 
 # Set correct environment variables.
