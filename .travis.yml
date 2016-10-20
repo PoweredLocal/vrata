@@ -6,6 +6,9 @@ services:
 php:
   - '7.0'
 
+before_install:
+  - phpenv config-add .travis.php.ini
+
 install:
   - composer install --dev
   - mkdir -p build/logs
