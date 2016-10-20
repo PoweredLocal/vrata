@@ -53,8 +53,8 @@ $sections = ['services', 'routes', 'global'];
 
 foreach ($sections as $section) {
     $config = env('GATEWAY_' . strtoupper($section), false);
-    $config = $config ? json_decode($config) : $configTemplate[$section];
-    if ($config === null) throw new \Exception('Unable to decode GATEWAY_' . strtoupper($section) . ' variable');
+    ${$section} = $config ? json_decode($config) : $configTemplate[$section];
+    if (${$section} === null) throw new \Exception('Unable to decode GATEWAY_' . strtoupper($section) . ' variable');
 }
 
 return compact($sections);
