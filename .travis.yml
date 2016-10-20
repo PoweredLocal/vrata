@@ -1,0 +1,18 @@
+language: php
+
+services:
+  - mysql
+
+env:
+  - DB_USERNAME="root" DB_HOST="127.0.0.1" DB_PASSWORD="" DB_DATABASE="travis" APP_ENV="testing" APP_KEY="Idgz1PE3zO9iNc0E3oeH3CHDPX9MzZe4"
+
+php:
+  - '7.0'
+
+before_script:
+  - composer install --dev
+  - mkdir -p build/logs
+  - mysql -e 'create database travis;'
+  - php artisan migrate
+  - vendor/bin/phpunit
+  - vendor/bin/test-reporter
