@@ -1,4 +1,3 @@
----
 engines:
   duplication:
     enabled: true
@@ -9,12 +8,14 @@ engines:
     enabled: true
   phpmd:
     enabled: true
+  phpcodesniffer:
+    enabled: true
 
 ratings:
   paths:
-  - "*.php"
+  - "**.php"
 
 exclude_paths:
-- config/
-- tests/
-- database/
+- config/**/*
+- tests/**/*
+- database/**/*
