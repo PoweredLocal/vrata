@@ -9,9 +9,11 @@ engines:
     enabled: true
   phpmd:
     enabled: true
+
 ratings:
   paths:
-  - "**.php"
+  - "*.php"
+
 exclude_paths:
 - config/
 - tests/
