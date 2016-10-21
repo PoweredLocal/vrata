@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Routing;
+
 use Illuminate\Support\Collection;
 
 /**
@@ -25,6 +26,11 @@ interface RouteContract
     public function getPath();
 
     /**
+     * @return string
+     */
+    public function getFormat();
+
+    /**
      * @return bool
      */
     public function isAggregate();
@@ -32,11 +38,11 @@ interface RouteContract
     /**
      * @return Collection
      */
-    public function getEndpoints();
+    public function getActions();
 
     /**
-     * @param EndpointContract $endpoint
+     * @param ActionContract $action
      * @return $this
      */
-    public function addEndpoint(EndpointContract $endpoint);
+    public function addAction(ActionContract $action);
 }

@@ -3,10 +3,10 @@
 namespace App\Routing;
 
 /**
- * Class Endpoint
+ * Class Action
  * @package App\Routing
  */
-class Endpoint implements EndpointContract
+class Action implements ActionContract
 {
     /**
      * @var string
@@ -19,6 +19,11 @@ class Endpoint implements EndpointContract
     protected $alias;
 
     /**
+     * @var string
+     */
+    protected $format;
+
+    /**
      * @var int
      */
     protected $sequence;
@@ -27,6 +32,11 @@ class Endpoint implements EndpointContract
      * @var string
      */
     protected $method;
+
+    /**
+     * @const string
+     */
+    const DEFAULT_FORMAT = 'json';
 
     /**
      * Endpoint constructor.
@@ -38,6 +48,7 @@ class Endpoint implements EndpointContract
         $this->method = $options['method'];
         $this->sequence = $options['sequence'] ?? 0;
         $this->alias = $options['alias'] ?? null;
+        $this->format = $options['format'] ?? self::DEFAULT_FORMAT;
     }
 
     /**
@@ -110,6 +121,25 @@ class Endpoint implements EndpointContract
     public function setSequence($sequence)
     {
         $this->sequence = $sequence;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * @param string $format
+     * @return $this
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
 
         return $this;
     }

@@ -82,17 +82,17 @@ class ParseServicesTest extends TestCase
     protected $expectedRoutes = [
         [
             'method' => 'GET',
-            'endpoint' => 'http://satu.local/devices',
+            'action' => 'http://satu.local/devices',
             'path' => '/v1/devices'
         ],
         [
             'method' => 'GET',
-            'endpoint' => 'http://satu.local/balloons/{id}',
+            'action' => 'http://satu.local/balloons/{id}',
             'path' => '/v1/balloons/{id}'
         ],
         [
             'method' => 'GET',
-            'endpoint' => 'http://dua.local/jokes',
+            'action' => 'http://dua.local/jokes',
             'path' => '/v1/jokes'
         ],
     ];
@@ -144,9 +144,9 @@ class ParseServicesTest extends TestCase
 
     /**
      * @test
-     * @covers ParseServices::getPaths()
-     * @covers ParseServices::getResources()
-     * @covers ParseServices::getEndpoints()
+     * @covers \App\Console\Commands\ParseServices::getPaths
+     * @covers \App\Console\Commands\ParseServices::getResources
+     * @covers \App\Console\Commands\ParseServices::getActions
      */
     public function requests_are_made_to_services()
     {
@@ -181,6 +181,6 @@ class ParseServicesTest extends TestCase
             return array_diff_key($route, ['id' => '']);
         })->toArray();
 
-        $this->assertTrue($routes == $this->expectedRoutes);
+        $this->assertEquals($this->expectedRoutes, $routes);
     }
 }

@@ -50,7 +50,7 @@ class RouteRegistry
             ]);
 
             collect($route['source'])->each(function ($source, $alias) use ($routeObject) {
-                $routeObject->addEndpoint(new Endpoint([
+                $routeObject->addAction(new Action([
                     'method' => $source['method'],
                     'url' => $source['service'] . $source['path'],
                     'sequence' => $source['sequence'] ?? 0,
@@ -124,7 +124,7 @@ class RouteRegistry
                 'path' => $routeDetails['path']
             ]);
 
-            $route->addEndpoint(new Endpoint([
+            $route->addAction(new Action([
                 'method' => $routeDetails['method'],
                 'url' => $routeDetails['endpoint']
             ]));

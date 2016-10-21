@@ -26,7 +26,17 @@ class Route implements RouteContract
     /**
      * @var array
      */
-    protected $endpoints = [];
+    protected $actions = [];
+
+    /**
+     * @var string
+     */
+    protected $format;
+
+    /**
+     * @const string
+     */
+    const DEFAULT_FORMAT = 'json';
 
     /**
      * Route constructor.
@@ -37,6 +47,7 @@ class Route implements RouteContract
         $this->id = $options['id'];
         $this->method = $options['method'];
         $this->path = $options['path'];
+        $this->format = $options['format'] ?? self::DEFAULT_FORMAT;
     }
 
     /**
@@ -68,15 +79,15 @@ class Route implements RouteContract
      */
     public function isAggregate()
     {
-        return count($this->endpoints) > 1;
+        return count($this->actions) > 1;
     }
 
     /**
      * @inheritDoc
      */
-    public function addEndpoint(EndpointContract $endpoint)
+    public function addAction(ActionContract $action)
     {
-        $this->endpoints[] = $endpoint;
+        $this->actions[] = $action;
 
         return $this;
     }
@@ -84,8 +95,27 @@ class Route implements RouteContract
     /**
      * @inheritDoc
      */
-    public function getEndpoints()
+    public function getActions()
     {
-        return collect($this->endpoints);
+        return collect($this->actions);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
+
+    /**
+     * @param string $format
+     * @return $this
+     */
+    public function setFormat($format)
+    {
+        $this->format = $format;
+
+        return $this;
     }
 }

@@ -83,7 +83,7 @@ class ParseServices extends Command
         return $resources->reduce(function($carry, $resource) {
             $pathElements = explode('.', $resource['path']);
             $resource['path'] = reset($pathElements);
-            $this->line('Processing API endpoint: ' . $resource['url'] . $resource['path']);
+            $this->line('Processing API action: ' . $resource['url'] . $resource['path']);
 
             $response = $this->client->request('GET', $resource['url'] . $resource['docRoot'] . $resource['path']);
             $data = json_decode((string) $response->getBody(), true);
@@ -102,7 +102,7 @@ class ParseServices extends Command
      * @param Collection $paths
      * @return array
      */
-    private function getEndpoints(Collection $paths)
+    private function getActions(Collection $paths)
     {
         return collect($paths)->reduce(function($carry, $route) {
             $pathElements = explode('.', $route['path']);
@@ -112,7 +112,7 @@ class ParseServices extends Command
                 $carry[] = [
                     'id' => (string)Uuid::generate(4),
                     'method' => $realOperation['method'],
-                    'endpoint' => $route['url'] . $route['path'],
+                    'action' => $route['url'] . $route['path'],
                     'path' => $this->config['global']['prefix'] . $route['path']
                 ];
             }
@@ -130,7 +130,7 @@ class ParseServices extends Command
      */
     public function handle()
     {
-        $output = $this->getEndpoints(
+        $output = $this->getActions(
             collect($this->getPaths(
                 $this->getResources()
             ))

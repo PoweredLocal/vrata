@@ -3,10 +3,10 @@
 namespace App\Routing;
 
 /**
- * Interface EndpointContract
+ * Interface ActionContract
  * @package App\Routing
  */
-interface EndpointContract
+interface ActionContract
 {
     /**
      * @return string
@@ -51,4 +51,9 @@ interface EndpointContract
      * @return $this
      */
     public function setSequence($sequence);
+
+    /**
+     * @return string
+     */
+    public function getFormat();
 }

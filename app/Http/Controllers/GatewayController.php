@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\DataFormatException;
 use App\Exceptions\NotImplementedException;
-use App\Routing\EndpointContract;
+use App\Routing\ActionContract;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use App\Http\Request;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Route;
 
 class GatewayController extends Controller
 {
@@ -20,9 +18,9 @@ class GatewayController extends Controller
     protected $client;
 
     /**
-     * @var array EndpointContract
+     * @var array ActionContract
      */
-    protected $endpoints;
+    protected $actions;
 
     /**
      * GatewayController constructor.
@@ -35,11 +33,11 @@ class GatewayController extends Controller
     {
         if (empty($request->getRoute())) throw new DataFormatException('Unable to find original URI pattern');
 
-        $this->endpoints = $request
+        $this->actions = $request
             ->getRoute()
-            ->getEndpoints()
-            ->groupBy(function ($endpoint) {
-                return $endpoint->getSequence();
+            ->getActions()
+            ->groupBy(function ($action) {
+                return $action->getSequence();
             })
             ->sort();
 
@@ -52,13 +50,11 @@ class GatewayController extends Controller
      */
     public function get(Request $request)
     {
-        $output = [];
+        $output = $this->actions->reduce(function($carry, $batch) use ($request) {
+            $promises = $batch->reduce(function($carry, $action) use ($request) {
+                $url = $this->injectParams($action->getUrl(), $request->getRouteParams());
 
-        $this->endpoints->each(function($batch, $sequence) use ($request, $output) {
-            $promises = $batch->reduce(function($carry, $endpoint) use ($request) {
-                $url = $this->injectParams($endpoint->getUrl(), $request->getRouteParams());
-
-                $carry[$endpoint->getAlias()] = $this->client->getAsync($url, [
+                $carry[$action->getAlias()] = $this->client->getAsync($url, [
                     'headers' => [
                         'X-User' => $request->user()->id
                     ]
@@ -72,19 +68,14 @@ class GatewayController extends Controller
             foreach ($responses as $key => $response) {
                 if ($response['state'] == 'fulfilled') {
                     $decoded = json_decode((string)$response['value']->getBody(), true);
-                    if ($decoded !== null) $output = array_merge_recursive($output, $decoded);
+                    if ($decoded !== null) $carry = array_merge_recursive($decoded, $carry);
+                } else {
+                    // Get the error
                 }
             }
-        });
 
-        // When all is done, generate final output based on response array
-/*        try {
-            $status = $response->getStatusCode();
-            $response = (string) $response->getBody();
-        } catch (RequestException $e) {
-            $status = 500;
-            $response = $e->getResponse() ?? get_class($e);
-        }*/
+            return $carry;
+        }, []);
 
         return new Response(json_encode($output), 200, [
             'Content-Type' => 'application/json'
@@ -106,28 +97,29 @@ class GatewayController extends Controller
     }
 
     /**
-     * @param $id
      * @param Request $request
+     * @throws NotImplementedException
      */
-    public function delete($id, Request $request)
+    public function delete(Request $request)
     {
-
+        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate DELETEs are not implemented yet');
     }
 
     /**
      * @param Request $request
+     * @throws NotImplementedException
      */
     public function post(Request $request)
     {
-
+        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate POSTs are not implemented yet');
     }
 
     /**
-     * @param $id
      * @param Request $request
+     * @throws NotImplementedException
      */
-    public function put($id, Request $request)
+    public function put(Request $request)
     {
-
+        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate PUTs are not implemented yet');
     }
 }

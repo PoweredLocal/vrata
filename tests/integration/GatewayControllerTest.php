@@ -76,7 +76,7 @@ class RoutingTest extends TestCase {
         $this->assertFalse($registry->isEmpty());
         $route = $registry->getRoutes()->first();
         $this->assertEquals('/v1/somewhere/{page}/details', $route->getPath());
-        $this->assertEquals(3, $route->getEndpoints()->count());
+        $this->assertEquals(3, $route->getActions()->count());
     }
 
     /**
@@ -92,11 +92,14 @@ class RoutingTest extends TestCase {
 
         $this->app->make(RouteRegistry::class)->bind(app());
 
+        $response1 = ['id' => 5123123, 'title' => 'Some title', 'post_id' => 5];
+        $response2 = ['book_id' => 5];
+        $response3 = ['more_data' => 'something'];
+
         $this->mockGuzzle([
-            new Response(200, [], json_encode(['id' => 5123123, 'title' => 'Some title', 'post_id' => 5])),
-            new Response(200, ['Content-Length' => 0], 'Lala'),
-            new Response(200, ['Content-Length' => 0], 'Lala'),
-            new Response(200, ['Content-Length' => 0], 'Lala')
+            new Response(200, [], json_encode($response1)),
+            new Response(200, [], json_encode($response2)),
+            new Response(200, [], json_encode($response3))
         ]);
 
         $this->get('/v1/somewhere/super-page/details', [
@@ -105,6 +108,9 @@ class RoutingTest extends TestCase {
 
         $this->assertEquals(200, $this->response->getStatusCode());
         $this->assertEquals(3, count($this->history));
+        $output = json_decode($this->response->getContent(), true);
+        $this->assertFalse($output === null);
+        $this->assertTrue(! array_diff($output, $response1 + $response2 + $response3) && ! array_diff($response1 + $response2 + $response3, $output));
     }
 
     /**
