@@ -8,7 +8,7 @@
 
 [![Docker Hub](http://dockeri.co/image/pwred/vrata)](https://hub.docker.com/r/pwred/vrata/)
 
-API gateway implemented in PHP and Lumen
+API gateway implemented in PHP and Lumen. Currently only supports JSON format.
 
 ## Preface
 

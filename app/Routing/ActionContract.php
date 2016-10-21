@@ -56,4 +56,9 @@ interface ActionContract
      * @return string
      */
     public function getFormat();
+
+    /**
+     * @return bool
+     */
+    public function isCritical();
 }

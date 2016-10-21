@@ -38,7 +38,7 @@ class RoutingTest extends TestCase {
                         'service' => 'service1',
                         'json_key' => 'details.settings',
                         'method' => 'GET',
-                        'path' => '/posts/{basic_post_id}',
+                        'path' => '/posts/{basic%post_id}',
                         'sequence' => 1,
                         'critical' => false
                     ],
@@ -46,7 +46,7 @@ class RoutingTest extends TestCase {
                         'service' => 'service2',
                         'json_key' => 'details.data',
                         'method' => 'GET',
-                        'path' => '/data/{basic_post_id}',
+                        'path' => '/data/{basic%post_id}',
                         'sequence' => 1,
                         'critical' => false
                     ]
@@ -98,7 +98,7 @@ class RoutingTest extends TestCase {
 
         $this->mockGuzzle([
             new Response(200, [], json_encode($response1)),
-            new Response(200, [], json_encode($response2)),
+            new Response(500, [], json_encode($response2)),
             new Response(200, [], json_encode($response3))
         ]);
 

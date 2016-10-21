@@ -29,6 +29,11 @@ class Action implements ActionContract
     protected $sequence;
 
     /**
+     * @var bool
+     */
+    protected $critical;
+
+    /**
      * @var string
      */
     protected $method;
@@ -48,6 +53,7 @@ class Action implements ActionContract
         $this->method = $options['method'];
         $this->sequence = $options['sequence'] ?? 0;
         $this->alias = $options['alias'] ?? null;
+        $this->critical = $options['critical'] ?? false;
         $this->format = $options['format'] ?? self::DEFAULT_FORMAT;
     }
 
@@ -121,6 +127,25 @@ class Action implements ActionContract
     public function setSequence($sequence)
     {
         $this->sequence = $sequence;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCritical()
+    {
+        return $this->critical;
+    }
+
+    /**
+     * @param bool $critical
+     * @return $this
+     */
+    public function setCritical($critical)
+    {
+        $this->critical = $critical;
 
         return $this;
     }

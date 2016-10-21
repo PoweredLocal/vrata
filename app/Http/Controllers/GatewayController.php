@@ -4,19 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\DataFormatException;
 use App\Exceptions\NotImplementedException;
-use App\Routing\ActionContract;
-use GuzzleHttp\Client;
-use GuzzleHttp\Promise;
+use App\Services\RestClient;
 use App\Http\Request;
 use Illuminate\Http\Response;
 
 class GatewayController extends Controller
 {
-    /**
-     * @var Client
-     */
-    protected $client;
-
     /**
      * @var array ActionContract
      */
@@ -25,11 +18,10 @@ class GatewayController extends Controller
     /**
      * GatewayController constructor.
      * @param Request $request
-     * @param Client $client
      * @throws DataFormatException
      * @throws NotImplementedException
      */
-    public function __construct(Request $request, Client $client)
+    public function __construct(Request $request)
     {
         if (empty($request->getRoute())) throw new DataFormatException('Unable to find original URI pattern');
 
@@ -40,41 +32,23 @@ class GatewayController extends Controller
                 return $action->getSequence();
             })
             ->sort();
-
-        $this->client = $client;
     }
 
     /**
      * @param Request $request
+     * @param RestClient $client
      * @return Response
      */
-    public function get(Request $request)
+    public function get(Request $request, RestClient $client)
     {
-        $output = $this->actions->reduce(function($carry, $batch) use ($request) {
-            $promises = $batch->reduce(function($carry, $action) use ($request) {
-                $url = $this->injectParams($action->getUrl(), $request->getRouteParams());
+        $client->setHeaders(['X-User' => $request->user()->id]);
+        $parametersJar = $request->getRouteParams();
 
-                $carry[$action->getAlias()] = $this->client->getAsync($url, [
-                    'headers' => [
-                        'X-User' => $request->user()->id
-                    ]
-                ]);
+        $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
+            $responses = $client->asyncGet($batch, $parametersJar);
+            $parametersJar = array_merge($parametersJar, $responses->exportParameters());
 
-                return $carry;
-            }, []);
-
-            $responses = Promise\settle($promises)->wait();
-
-            foreach ($responses as $key => $response) {
-                if ($response['state'] == 'fulfilled') {
-                    $decoded = json_decode((string)$response['value']->getBody(), true);
-                    if ($decoded !== null) $carry = array_merge_recursive($decoded, $carry);
-                } else {
-                    // Get the error
-                }
-            }
-
-            return $carry;
+            return array_merge($carry, $responses->getResponses()->flatten(1)->toArray());
         }, []);
 
         return new Response(json_encode($output), 200, [
@@ -83,71 +57,48 @@ class GatewayController extends Controller
     }
 
     /**
-     * @param string $url
-     * @param array $params
-     * @return string
+     * @param Request $request
+     * @param RestClient $client
+     * @return Response
      */
-    private function injectParams($url, array $params)
+    public function delete(Request $request, RestClient $client)
     {
-        foreach ($params as $key => $value) {
-            $url = str_replace("{" . $key . "}", $value, $url);
-        }
-
-        return $url;
+        return $this->singleCommand('delete', $request, $client);
     }
 
     /**
      * @param Request $request
-     * @throws NotImplementedException
+     * @param RestClient $client
      * @return Response
      */
-    public function delete(Request $request)
+    public function post(Request $request, RestClient $client)
     {
-        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate DELETEs are not implemented yet');
-
-        $response = $this->client->delete($this->actions->first()->getUrl(), [
-            'headers' => [
-                'X-User' => $request->user()->id
-            ]
-        ]);
-
-        return new Response((string)$response->getBody(), $response->getStatusCode());
+        return $this->singleCommand('post', $request, $client);
     }
 
     /**
      * @param Request $request
-     * @throws NotImplementedException
+     * @param RestClient $client
      * @return Response
      */
-    public function post(Request $request)
+    public function put(Request $request, RestClient $client)
     {
-        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate POSTs are not implemented yet');
-
-        $response = $this->client->post($this->actions->first()->getUrl(), [
-            'headers' => [
-                'X-User' => $request->user()->id
-            ],
-            'body' => $request->getContent()
-        ]);
-
-        return new Response((string)$response->getBody(), $response->getStatusCode());
+        return $this->singleCommand('put', $request, $client);
     }
 
     /**
+     * @param $verb
      * @param Request $request
-     * @throws NotImplementedException
+     * @param RestClient $client
      * @return Response
+     * @throws NotImplementedException
      */
-    public function put(Request $request)
+    private function singleCommand($verb, Request $request, RestClient $client)
     {
-        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate PUTs are not implemented yet');
+        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($verb) . 's are not implemented yet');
 
-        $response = $this->client->put($this->actions->first()->getUrl(), [
-            'headers' => [
-                'X-User' => $request->user()->id
-            ],
-            'body' => $request->getContent()
-        ]);
+        $client->setBody($request->getContent());
+        $response = $client->{$verb}($this->actions->first()->getUrl());
 
         return new Response((string)$response->getBody(), $response->getStatusCode());
     }
