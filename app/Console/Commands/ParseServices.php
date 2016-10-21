@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Exceptions\DataFormatException;
 use GuzzleHttp\Client;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Webpatser\Uuid\Uuid;
 
@@ -47,6 +48,81 @@ class ParseServices extends Command
     }
 
     /**
+     * @return Collection
+     */
+    private function getResources()
+    {
+        return collect($this->config['services'])->map(function($settings, $serviceId) {
+            $this->info('** Parsing ' . $serviceId);
+
+            $docRoot = $settings['doc_point'] ?? $this->config['global']['doc_point'];
+            $url = $settings['url'] ?? 'http://' . $serviceId . '.' . $this->config['global']['domain'];
+
+            $response = $this->client->request('GET', $url . $docRoot);
+
+            $data = json_decode((string) $response->getBody(), true);
+            if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $serviceId);
+            if (! isset($data['apis'])) throw new DataFormatException($serviceId . ' doesn\'t contain API data');
+
+            return collect($data['apis'])->map(function ($api) use ($url, $serviceId, $docRoot) {
+                return array_merge($api, [
+                    'url' => $url,
+                    'service' => $serviceId,
+                    'docRoot' => $docRoot,
+                ]);
+            });
+        })->flatten(1);
+    }
+
+    /**
+     * @param Collection $resources
+     * @return array
+     */
+    private function getPaths(Collection $resources)
+    {
+        return $resources->reduce(function($carry, $resource) {
+            $pathElements = explode('.', $resource['path']);
+            $resource['path'] = reset($pathElements);
+            $this->line('Processing API endpoint: ' . $resource['url'] . $resource['path']);
+
+            $response = $this->client->request('GET', $resource['url'] . $resource['docRoot'] . $resource['path']);
+            $data = json_decode((string) $response->getBody(), true);
+            if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $resource['serviceId']);
+
+            // Inject service details
+            $apis = collect($data['apis'])->map(function ($api) use ($resource) {
+                return array_merge($api, $resource);
+            });
+
+            return array_merge($carry, $apis->toArray());
+        }, []);
+    }
+
+    /**
+     * @param Collection $paths
+     * @return array
+     */
+    private function getEndpoints(Collection $paths)
+    {
+        return collect($paths)->reduce(function($carry, $route) {
+            $pathElements = explode('.', $route['path']);
+            $route['path'] = reset($pathElements);
+
+            foreach ($route['operations'] as $realOperation) {
+                $carry[] = [
+                    'id' => (string)Uuid::generate(4),
+                    'method' => $realOperation['method'],
+                    'endpoint' => $route['url'] . $route['path'],
+                    'path' => $this->config['global']['prefix'] . $route['path']
+                ];
+            }
+
+            return $carry;
+        }, []);
+    }
+
+
+    /**
      * Execute the console command.
      *
      * @return mixed
@@ -54,43 +130,11 @@ class ParseServices extends Command
      */
     public function handle()
     {
-        $output = [];
-
-        foreach ($this->config['services'] as $serviceId => $settings) {
-            $this->info('** Parsing ' . $serviceId);
-
-            $docRoot = $settings['doc_point'] ?? $this->config['global']['doc_point'];
-            $url = $settings['url'] ?? 'http://' . $serviceId . '.' . $this->config['global']['domain'];
-            $response = $this->client->request('GET', $url . $docRoot);
-
-            $data = json_decode((string) $response->getBody(), true);
-            if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $serviceId);
-            if (! isset($data['apis'])) throw new DataFormatException($serviceId . ' doesn\'t contain API data');
-
-            foreach ($data['apis'] as $api) {
-                $pathElements = explode('.', $api['path']);
-                $api['path'] = reset($pathElements);
-                $this->line('Processing API endpoint: ' . $url . $api['path']);
-
-                $response = $this->client->request('GET', $url . $docRoot . $api['path']);
-                $apiData = json_decode((string) $response->getBody(), true);
-                if ($apiData === null) throw new DataFormatException('Unable to get JSON response from ' . $serviceId);
-
-                foreach ($apiData['apis'] as $operation) {
-                    $pathElements = explode('.', $operation['path']);
-                    $operation['path'] = reset($pathElements);
-
-                    foreach ($operation['operations'] as $realOperation) {
-                        $output[] = [
-                            'id' => (string)Uuid::generate(4),
-                            'method' => $realOperation['method'],
-                            'endpoint' => $url . $operation['path'],
-                            'path' => $this->config['global']['prefix'] . $operation['path']
-                        ];
-                    }
-                }
-            }
-        }
+        $output = $this->getEndpoints(
+            collect($this->getPaths(
+                $this->getResources()
+            ))
+        );
 
         $this->info('Dumping route data to JSON file');
 
