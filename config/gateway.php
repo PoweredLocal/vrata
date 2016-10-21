@@ -14,7 +14,7 @@ return (static function() {
                 'aggregate' => true,
                 'method' => 'GET',
                 'path' => '/devices/{mac}/details',
-                'source' => [
+                'actions' => [
                     'device' => [
                         'service' => 'core',
                         'method' => 'GET',

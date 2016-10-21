@@ -27,7 +27,7 @@ class RoutingTest extends TestCase {
                 'aggregate' => true,
                 'method' => 'GET',
                 'path' => '/somewhere/{page}/details',
-                'source' => [
+                'actions' => [
                     'basic' => [
                         'service' => 'service1',
                         'method' => 'GET',

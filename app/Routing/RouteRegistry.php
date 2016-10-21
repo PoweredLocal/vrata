@@ -49,11 +49,11 @@ class RouteRegistry
                 'alias' => $key
             ]);
 
-            collect($route['source'])->each(function ($source, $alias) use ($routeObject) {
+            collect($route['actions'])->each(function ($action, $alias) use ($routeObject) {
                 $routeObject->addAction(new Action([
-                    'method' => $source['method'],
-                    'url' => $source['service'] . $source['path'],
-                    'sequence' => $source['sequence'] ?? 0,
+                    'method' => $action['method'],
+                    'url' => $action['service'] . $action['path'],
+                    'sequence' => $action['sequence'] ?? 0,
                     'alias' => $alias
                 ]));
             });
@@ -126,7 +126,7 @@ class RouteRegistry
 
             $route->addAction(new Action([
                 'method' => $routeDetails['method'],
-                'url' => $routeDetails['endpoint']
+                'url' => $routeDetails['action']
             ]));
 
             $registry->addRoute($route);

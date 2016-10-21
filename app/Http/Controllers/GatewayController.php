@@ -99,27 +99,56 @@ class GatewayController extends Controller
     /**
      * @param Request $request
      * @throws NotImplementedException
+     * @return Response
      */
     public function delete(Request $request)
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate DELETEs are not implemented yet');
+
+        $response = $this->client->delete($this->actions->first()->getUrl(), [
+            'headers' => [
+                'X-User' => $request->user()->id
+            ]
+        ]);
+
+        return new Response((string)$response->getBody(), $response->getStatusCode());
     }
 
     /**
      * @param Request $request
      * @throws NotImplementedException
+     * @return Response
      */
     public function post(Request $request)
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate POSTs are not implemented yet');
+
+        $response = $this->client->post($this->actions->first()->getUrl(), [
+            'headers' => [
+                'X-User' => $request->user()->id
+            ],
+            'body' => $request->getContent()
+        ]);
+
+        return new Response((string)$response->getBody(), $response->getStatusCode());
     }
 
     /**
      * @param Request $request
      * @throws NotImplementedException
+     * @return Response
      */
     public function put(Request $request)
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate PUTs are not implemented yet');
+
+        $response = $this->client->put($this->actions->first()->getUrl(), [
+            'headers' => [
+                'X-User' => $request->user()->id
+            ],
+            'body' => $request->getContent()
+        ]);
+
+        return new Response((string)$response->getBody(), $response->getStatusCode());
     }
 }
