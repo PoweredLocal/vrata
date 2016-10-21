@@ -91,7 +91,7 @@ class ParseServices extends Command
 
             // Inject service details
             $apis = collect($data['apis'])->map(function ($api) use ($resource) {
-                return array_merge($api, $resource);
+                return array_merge($resource, $api);
             });
 
             return array_merge($carry, $apis->toArray());
@@ -136,14 +136,10 @@ class ParseServices extends Command
             ))
         );
 
+        if (empty($output)) throw new DataFormatException('Unable to parse the routes');
+
         $this->info('Dumping route data to JSON file');
-
-        if (Storage::exists('routes.json')) {
-            if (! $this->confirm('File exists, we are about to overwrite it. Are you sure? [y|N]')) exit;
-        }
-
         Storage::put('routes.json', json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-
         $this->info('Finished!');
     }
 }

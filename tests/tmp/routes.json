@@ -1,0 +1,20 @@
+[
+    {
+        "id": "de5574f9-d7e5-4dc2-a1ff-75ce3dc06366",
+        "method": "GET",
+        "endpoint": "http://satu.local/devices",
+        "path": "/v1/devices"
+    },
+    {
+        "id": "4aca77f6-7521-4630-8978-116cd9643088",
+        "method": "GET",
+        "endpoint": "http://satu.local/balloons/{id}",
+        "path": "/v1/balloons/{id}"
+    },
+    {
+        "id": "1e70e3f4-4baa-4261-9985-8d3177e48ac8",
+        "method": "GET",
+        "endpoint": "http://dua.local/jokes",
+        "path": "/v1/jokes"
+    }
+]

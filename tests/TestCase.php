@@ -11,7 +11,14 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
      */
     public function createApplication()
     {
-        return require __DIR__.'/../bootstrap/app.php';
+        $app = require __DIR__.'/../bootstrap/app.php';
+
+        $app->make('config')->set('filesystems.disks.local', [
+            'driver' => 'local',
+            'root'   => base_path('tests/tmp'),
+        ]);
+
+        return $app;
     }
 
     /**
