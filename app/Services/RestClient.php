@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\ObjectNotFoundException;
 use App\Exceptions\UnableToExecuteRequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
@@ -124,12 +125,10 @@ class RestClient
             return $response['state'] != 'fulfilled';
         })->each(function ($response, $alias) use ($wrapper) {
             $response = $response['reason']->getResponse();
-
-            if ($wrapper->hasCriticalActions() && $response->getStatusCode() != 404) throw new UnableToExecuteRequestException();
+            if ($wrapper->hasCriticalActions()) throw new UnableToExecuteRequestException($response);
 
             // Do we have an error response from the service?
             if (! $response) $response = new Response(502, []);
-
             $wrapper->addFailedAction($alias, $response);
         });
 

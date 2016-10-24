@@ -9,39 +9,9 @@ namespace App\Routing;
 class Action implements ActionContract
 {
     /**
-     * @var string
+     * @var array
      */
-    protected $url;
-
-    /**
-     * @var string
-     */
-    protected $alias;
-
-    /**
-     * @var string
-     */
-    protected $format;
-
-    /**
-     * @var int
-     */
-    protected $sequence;
-
-    /**
-     * @var bool
-     */
-    protected $critical;
-
-    /**
-     * @var string
-     */
-    protected $method;
-
-    /**
-     * @var string
-     */
-    protected $service;
+    protected $config;
 
     /**
      * @const string
@@ -54,13 +24,7 @@ class Action implements ActionContract
      */
     public function __construct(array $options)
     {
-        $this->url = $options['url'];
-        $this->method = $options['method'];
-        $this->service = $options['service'];
-        $this->sequence = $options['sequence'] ?? 0;
-        $this->alias = $options['alias'] ?? null;
-        $this->critical = $options['critical'] ?? false;
-        $this->format = $options['format'] ?? self::DEFAULT_FORMAT;
+        $this->config = $options;
     }
 
     /**
@@ -68,7 +32,7 @@ class Action implements ActionContract
      */
     public function getUrl()
     {
-        return $this->url;
+        return $this->config['path'];
     }
 
     /**
@@ -76,7 +40,7 @@ class Action implements ActionContract
      */
     public function setUrl($url)
     {
-        $this->url = $url;
+        $this->config['path'] = $url;
 
         return $this;
     }
@@ -86,7 +50,7 @@ class Action implements ActionContract
      */
     public function getMethod()
     {
-        return $this->method;
+        return $this->config['method'];
     }
 
     /**
@@ -94,7 +58,7 @@ class Action implements ActionContract
      */
     public function setMethod($method)
     {
-        $this->method = $method;
+        $this->config['method'] = $method;
 
         return $this;
     }
@@ -104,7 +68,7 @@ class Action implements ActionContract
      */
     public function getAlias()
     {
-        return $this->alias;
+        return $this->config['alias'] ?? null;
     }
 
     /**
@@ -113,7 +77,7 @@ class Action implements ActionContract
      */
     public function setAlias($alias)
     {
-        $this->alias = $alias;
+        $this->config['alias'] = $alias;
 
         return $this;
     }
@@ -123,7 +87,7 @@ class Action implements ActionContract
      */
     public function getService()
     {
-        return $this->service;
+        return $this->config['service'];
     }
 
     /**
@@ -132,7 +96,7 @@ class Action implements ActionContract
      */
     public function setService($service)
     {
-        $this->service = $service;
+        $this->config['service'] = $service;
 
         return $this;
     }
@@ -142,7 +106,7 @@ class Action implements ActionContract
      */
     public function getSequence()
     {
-        return $this->sequence;
+        return $this->config['sequence'] ?? 0;
     }
 
     /**
@@ -151,7 +115,7 @@ class Action implements ActionContract
      */
     public function setSequence($sequence)
     {
-        $this->sequence = $sequence;
+        $this->config['sequence'] = $sequence;
 
         return $this;
     }
@@ -161,7 +125,7 @@ class Action implements ActionContract
      */
     public function isCritical()
     {
-        return $this->critical;
+        return $this->config['critical'] ?? false;
     }
 
     /**
@@ -170,7 +134,7 @@ class Action implements ActionContract
      */
     public function setCritical($critical)
     {
-        $this->critical = $critical;
+        $this->config['critical'] = $critical;
 
         return $this;
     }
@@ -180,7 +144,7 @@ class Action implements ActionContract
      */
     public function getFormat()
     {
-        return $this->format;
+        return $this->config['format'] ?? self::DEFAULT_FORMAT;
     }
 
     /**
@@ -189,8 +153,16 @@ class Action implements ActionContract
      */
     public function setFormat($format)
     {
-        $this->format = $format;
+        $this->config['format'] = $format;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOutputKey()
+    {
+        return $this->config['output_key'] ?? null;
     }
 }

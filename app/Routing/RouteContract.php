@@ -41,6 +41,11 @@ interface RouteContract
     public function getActions();
 
     /**
+     * @return array
+     */
+    public function getConfig();
+
+    /**
      * @param ActionContract $action
      * @return $this
      */

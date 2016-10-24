@@ -16,6 +16,11 @@ class GatewayController extends Controller
     protected $actions;
 
     /**
+     * @var array
+     */
+    protected $config;
+
+    /**
      * GatewayController constructor.
      * @param Request $request
      * @throws DataFormatException
@@ -24,6 +29,10 @@ class GatewayController extends Controller
     public function __construct(Request $request)
     {
         if (empty($request->getRoute())) throw new DataFormatException('Unable to find original URI pattern');
+
+        $this->config = $request
+            ->getRoute()
+            ->getConfig();
 
         $this->actions = $request
             ->getRoute()
@@ -41,19 +50,32 @@ class GatewayController extends Controller
      */
     public function get(Request $request, RestClient $client)
     {
-        $client->setHeaders(['X-User' => $request->user()->id ?? 0]);
+        $client->setHeaders(['X-User' => $request->user()->id ?? 1]);
         $parametersJar = $request->getRouteParams();
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
             $responses = $client->asyncGet($batch, $parametersJar);
             $parametersJar = array_merge($parametersJar, $responses->exportParameters());
 
-            return array_merge($carry, $responses->getResponses()->flatten(1)->toArray());
+            return array_merge($carry, $responses->getResponses()->toArray());
         }, []);
 
-        return new Response(json_encode($output), 200, [
+        return new Response(json_encode($this->rearrangeKeys($output)), 200, [
             'Content-Type' => 'application/json'
         ]);
+    }
+
+    /**
+     * @param array $output
+     * @return array
+     */
+    private function rearrangeKeys(array $output)
+    {
+        return collect(array_keys($output))->reduce(function($carry, $alias) use ($output) {
+            $key = $this->config['actions'][$alias]['output_key'] ?? $alias;
+            array_set($carry, $key, $output[$alias]);
+            return $carry;
+        }, []);
     }
 
     /**
@@ -97,7 +119,9 @@ class GatewayController extends Controller
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($verb) . 's are not implemented yet');
 
+        $client->setHeaders(['X-User' => $request->user()->id]);
         $client->setBody($request->getContent());
+
         $response = $client->{$verb}($this->actions->first()->getUrl());
 
         return new Response((string)$response->getBody(), $response->getStatusCode());

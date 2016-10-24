@@ -42,22 +42,14 @@ class RouteRegistry
         if (empty($config)) return;
 
         collect($config['routes'])->each(function ($route, $key) {
-            $routeObject = new Route([
+            $routeObject = new Route(array_merge($route, [
                 'id' => (string)Uuid::generate(4),
-                'method' => $route['method'],
                 'path' => config('gateway.global.prefix', '/') . $route['path'],
                 'alias' => $key
-            ]);
+            ]));
 
             collect($route['actions'])->each(function ($action, $alias) use ($routeObject) {
-                $routeObject->addAction(new Action([
-                    'url' => $action['path'],
-                    'service' => $action['service'],
-                    'method' => $action['method'],
-                    'sequence' => $action['sequence'] ?? 0,
-                    'alias' => $alias,
-                    'critical' => $action['critical'] ?? false
-                ]));
+                $routeObject->addAction(new Action(array_merge($action, ['alias' => $alias])));
             });
 
             $this->addRoute($routeObject);

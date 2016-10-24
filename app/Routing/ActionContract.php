@@ -66,4 +66,9 @@ interface ActionContract
      * @return bool
      */
     public function isCritical();
+
+    /**
+     * @return string
+     */
+    public function getOutputKey();
 }

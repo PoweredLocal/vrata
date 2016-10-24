@@ -24,7 +24,7 @@ return (static function() {
                     ],
                     'settings' => [
                         'service' => 'core',
-                        'json_key' => 'network.settings',
+                        'output_key' => 'network.settings',
                         'method' => 'GET',
                         'path' => 'networks/{device%network_id}',
                         'sequence' => 1,
@@ -32,7 +32,7 @@ return (static function() {
                     ],
                     'clients' => [
                         'service' => 'login',
-                        'json_key' => 'network.clients',
+                        'output_key' => 'network.clients',
                         'method' => 'GET',
                         'path' => 'visitors/{device%network_id}',
                         'sequence' => 1,

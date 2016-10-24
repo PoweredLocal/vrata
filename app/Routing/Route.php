@@ -9,29 +9,9 @@ namespace App\Routing;
 class Route implements RouteContract
 {
     /**
-     * @var string
-     */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $method;
-
-    /**
-     * @var string
-     */
-    protected $path;
-
-    /**
      * @var array
      */
     protected $actions = [];
-
-    /**
-     * @var string
-     */
-    protected $format;
 
     /**
      * @const string
@@ -39,15 +19,25 @@ class Route implements RouteContract
     const DEFAULT_FORMAT = 'json';
 
     /**
+     * @var array
+     */
+    protected $config;
+
+    /**
      * Route constructor.
      * @param array $options
      */
     public function __construct(array $options)
     {
-        $this->id = $options['id'];
-        $this->method = $options['method'];
-        $this->path = $options['path'];
-        $this->format = $options['format'] ?? self::DEFAULT_FORMAT;
+        $this->config = $options;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**
@@ -55,7 +45,7 @@ class Route implements RouteContract
      */
     public function getId()
     {
-        return $this->id;
+        return $this->config['id'];
     }
 
     /**
@@ -63,7 +53,7 @@ class Route implements RouteContract
      */
     public function getMethod()
     {
-        return $this->method;
+        return $this->config['method'];
     }
 
     /**
@@ -71,7 +61,7 @@ class Route implements RouteContract
      */
     public function getPath()
     {
-        return $this->path;
+        return $this->config['path'];
     }
 
     /**
@@ -105,7 +95,7 @@ class Route implements RouteContract
      */
     public function getFormat()
     {
-        return $this->format;
+        return $this->config['format'] ?? self::DEFAULT_FORMAT;
     }
 
     /**
@@ -114,7 +104,7 @@ class Route implements RouteContract
      */
     public function setFormat($format)
     {
-        $this->format = $format;
+        $this->config['format'] = $format;
 
         return $this;
     }

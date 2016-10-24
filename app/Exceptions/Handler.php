@@ -47,7 +47,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if ($e instanceof UnableToExecuteRequestException) {
-            return new Response(json_encode(['error' => 'One of the underlying services is unavailable']), 502);
+            return new Response($e->getMessage(), $e->getCode());
         }
 
         return parent::render($request, $e);
