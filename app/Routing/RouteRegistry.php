@@ -120,7 +120,7 @@ class RouteRegistry
 
             $route->addAction(new Action([
                 'method' => $routeDetails['method'],
-                'url' => $routeDetails['service_url'],
+                'path' => $routeDetails['service_url'],
                 'service' => $routeDetails['service']
             ]));
 

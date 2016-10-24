@@ -99,6 +99,12 @@ class RoutingTest extends TestCase {
             new Response(200, [], json_encode($response3))
         ]);
 
+        $responses = [
+            'basic' => $response1,
+            'clients' => $response3,
+            'settings' => $response2,
+        ];
+
         $this->get('/v1/somewhere/super-page/details', [
             'Authorization' => 'Bearer ' . $this->getUser()
         ]);
@@ -107,7 +113,7 @@ class RoutingTest extends TestCase {
         $this->assertEquals(3, count($this->history));
         $output = json_decode($this->response->getContent(), true);
         $this->assertFalse($output === null);
-        $this->assertTrue(! array_diff($output, $response1 + $response2 + $response3) && ! array_diff($response1 + $response2 + $response3, $output));
+        $this->assertEquals($responses, $output);
     }
 
     /**
