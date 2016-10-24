@@ -18,7 +18,7 @@ install:
   - docker run -d --name app -e APP_KEY=EzMx2svtA1CsOzPrqE9EMmUkegls4mjv -e GATEWAY_SERVICES="[]" -e GATEWAY_ROUTES="[]" pwred/vrata; sleep 10
 
 script:
-  - docker exec app /bin/sh -c "cd /home/app; cat /dev/null >> databases/database.sqlite; export APP_ENV=testing; php artisan migrate"
+  - docker exec app /bin/sh -c "cd /home/app; cat /dev/null >> database/database.sqlite; export APP_ENV=testing; php artisan migrate"
   - docker exec app /bin/sh -c "cd /home/app; export APP_ENV=testing; ./vendor/bin/phpunit; phpdismod xdebug"
   - docker cp app:/home/app/build/logs/clover.xml ./build/logs/clover.xml
   - ./vendor/bin/test-reporter
