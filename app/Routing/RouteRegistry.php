@@ -38,10 +38,10 @@ class RouteRegistry
      */
     private function parseConfigRoutes()
     {
-        $routes = config('gateway.routes');
-        if (empty($routes)) return;
+        $config = config('gateway');
+        if (empty($config)) return;
 
-        collect($routes)->each(function ($route, $key) {
+        collect($config['routes'])->each(function ($route, $key) {
             $routeObject = new Route([
                 'id' => (string)Uuid::generate(4),
                 'method' => $route['method'],
@@ -51,10 +51,12 @@ class RouteRegistry
 
             collect($route['actions'])->each(function ($action, $alias) use ($routeObject) {
                 $routeObject->addAction(new Action([
+                    'url' => $action['path'],
+                    'service' => $action['service'],
                     'method' => $action['method'],
-                    'url' => $action['service'] . $action['path'],
                     'sequence' => $action['sequence'] ?? 0,
-                    'alias' => $alias
+                    'alias' => $alias,
+                    'critical' => $action['critical'] ?? false
                 ]));
             });
 
@@ -126,7 +128,8 @@ class RouteRegistry
 
             $route->addAction(new Action([
                 'method' => $routeDetails['method'],
-                'url' => $routeDetails['action']
+                'url' => $routeDetails['service_url'],
+                'service' => $routeDetails['service']
             ]));
 
             $registry->addRoute($route);

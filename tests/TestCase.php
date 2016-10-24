@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Services\ServiceRegistryContract;
+use App\Services\DNSRegistry;
 
 class TestCase extends Laravel\Lumen\Testing\TestCase
 {
@@ -17,6 +19,8 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
             'driver' => 'local',
             'root'   => base_path('tests/tmp'),
         ]);
+
+        $app->bind(ServiceRegistryContract::class, DNSRegistry::class);
 
         return $app;
     }

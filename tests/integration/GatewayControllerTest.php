@@ -56,12 +56,9 @@ class RoutingTest extends TestCase {
 
         'global' => [
             'prefix' => '/v1',
-            'timeout' => 1.0
-        ],
-
-        'defaults' => [
+            'timeout' => 1.0,
             'doc_point' => '/api/doc',
-            'domain' => 'localhost'
+            'domain' => 'local'
         ]
     ]];
 

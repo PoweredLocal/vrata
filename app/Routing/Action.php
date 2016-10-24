@@ -39,6 +39,11 @@ class Action implements ActionContract
     protected $method;
 
     /**
+     * @var string
+     */
+    protected $service;
+
+    /**
      * @const string
      */
     const DEFAULT_FORMAT = 'json';
@@ -51,6 +56,7 @@ class Action implements ActionContract
     {
         $this->url = $options['url'];
         $this->method = $options['method'];
+        $this->service = $options['service'];
         $this->sequence = $options['sequence'] ?? 0;
         $this->alias = $options['alias'] ?? null;
         $this->critical = $options['critical'] ?? false;
@@ -108,6 +114,25 @@ class Action implements ActionContract
     public function setAlias($alias)
     {
         $this->alias = $alias;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+
+    /**
+     * @param string $service
+     * @return $this
+     */
+    public function setService($service)
+    {
+        $this->service = $service;
 
         return $this;
     }

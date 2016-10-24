@@ -19,13 +19,14 @@ return (static function() {
                         'service' => 'core',
                         'method' => 'GET',
                         'path' => 'devices/{mac}',
-                        'sequence' => 0
+                        'sequence' => 0,
+                        'critical' => true
                     ],
                     'settings' => [
                         'service' => 'core',
                         'json_key' => 'network.settings',
                         'method' => 'GET',
-                        'path' => 'networks/{device_network_id}',
+                        'path' => 'networks/{device%network_id}',
                         'sequence' => 1,
                         'critical' => false
                     ],
@@ -33,7 +34,7 @@ return (static function() {
                         'service' => 'login',
                         'json_key' => 'network.clients',
                         'method' => 'GET',
-                        'path' => 'visitors/{device_network_id}',
+                        'path' => 'visitors/{device%network_id}',
                         'sequence' => 1,
                         'critical' => false
                     ]
@@ -46,7 +47,7 @@ return (static function() {
             'prefix' => '/v1',
             'timeout' => 5.0,
             'doc_point' => '/api/doc',
-            'domain' => 'local'
+            'domain' => 'local.pwred.com'
         ],
     ];
 

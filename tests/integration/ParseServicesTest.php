@@ -82,17 +82,20 @@ class ParseServicesTest extends TestCase
     protected $expectedRoutes = [
         [
             'method' => 'GET',
-            'action' => 'http://satu.local/devices',
+            'service' => 'satu',
+            'service_url' => '/devices',
             'path' => '/v1/devices'
         ],
         [
             'method' => 'GET',
-            'action' => 'http://satu.local/balloons/{id}',
+            'service' => 'satu',
+            'service_url' => '/balloons/{id}',
             'path' => '/v1/balloons/{id}'
         ],
         [
             'method' => 'GET',
-            'action' => 'http://dua.local/jokes',
+            'service' => 'dua',
+            'service_url' => '/jokes',
             'path' => '/v1/jokes'
         ],
     ];

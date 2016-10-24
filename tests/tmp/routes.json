@@ -1,20 +1,23 @@
 [
     {
-        "id": "16d6fee0-84a4-4c71-9034-19344e8d8148",
+        "id": "0ca9f314-0953-4718-bbdd-a73810e56b1a",
         "method": "GET",
-        "action": "http://satu.local/devices",
+        "service_url": "/devices",
+        "service": "satu",
         "path": "/v1/devices"
     },
     {
-        "id": "6a874794-0cca-4821-b85f-165218b77829",
+        "id": "a2608383-fa5d-4fa4-81eb-be69645004ff",
         "method": "GET",
-        "action": "http://satu.local/balloons/{id}",
+        "service_url": "/balloons/{id}",
+        "service": "satu",
         "path": "/v1/balloons/{id}"
     },
     {
-        "id": "5e3c9194-058b-4f08-a3f8-b6608ff5d059",
+        "id": "55552d5b-859e-4167-9a67-83c211e26d96",
         "method": "GET",
-        "action": "http://dua.local/jokes",
+        "service_url": "/jokes",
+        "service": "dua",
         "path": "/v1/jokes"
     }
 ]

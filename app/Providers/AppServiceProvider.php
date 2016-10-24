@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Http\Request;
 use App\Routing\RouteRegistry;
+use App\Services\DNSRegistry;
+use App\Services\ServiceRegistryContract;
 use Dusterio\LumenPassport\LumenPassport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -30,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(Request::class, function () {
             return $this->prepareRequest(Request::capture());
         });
+
+        $this->app->bind(ServiceRegistryContract::class, DNSRegistry::class);
 
         $this->app->singleton(Client::class, function() {
             return new Client([

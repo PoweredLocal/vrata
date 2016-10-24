@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\UnableToExecuteRequestException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7\Response;
@@ -19,6 +20,11 @@ class RestClient
     protected $client;
 
     /**
+     * @var ServiceRegistryContract
+     */
+    protected $services;
+
+    /**
      * @var array
      */
     protected $guzzleParams = [
@@ -28,10 +34,12 @@ class RestClient
     /**
      * RestClient constructor.
      * @param Client $client
+     * @param ServiceRegistryContract $services
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, ServiceRegistryContract $services)
     {
         $this->client = $client;
+        $this->services = $services;
     }
 
     /**
@@ -87,7 +95,7 @@ class RestClient
 
     /**
      * @param Collection $batch
-     * @param array $parametersJar
+     * @param $parametersJar
      * @return RestBatchResponse
      */
     public function asyncGet(Collection $batch, $parametersJar)
@@ -97,6 +105,7 @@ class RestClient
 
         $promises = $batch->reduce(function($carry, $action) use ($parametersJar) {
             $url = $this->injectParams($action->getUrl(), $parametersJar);
+            $url = $this->services->resolveInstance($action->getService()) . '/' . $url;
             $carry[$action->getAlias()] = $this->client->getAsync($url, $this->guzzleParams);
             return $carry;
         }, []);
@@ -115,6 +124,8 @@ class RestClient
             return $response['state'] != 'fulfilled';
         })->each(function ($response, $alias) use ($wrapper) {
             $response = $response['reason']->getResponse();
+
+            if ($wrapper->hasCriticalActions() && $response->getStatusCode() != 404) throw new UnableToExecuteRequestException();
 
             // Do we have an error response from the service?
             if (! $response) $response = new Response(502, []);

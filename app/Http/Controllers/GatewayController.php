@@ -41,7 +41,7 @@ class GatewayController extends Controller
      */
     public function get(Request $request, RestClient $client)
     {
-        $client->setHeaders(['X-User' => $request->user()->id]);
+        $client->setHeaders(['X-User' => $request->user()->id ?? 0]);
         $parametersJar = $request->getRouteParams();
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
@@ -63,7 +63,7 @@ class GatewayController extends Controller
      */
     public function delete(Request $request, RestClient $client)
     {
-        return $this->singleCommand('delete', $request, $client);
+        return $this->simpleRequest('delete', $request, $client);
     }
 
     /**
@@ -73,7 +73,7 @@ class GatewayController extends Controller
      */
     public function post(Request $request, RestClient $client)
     {
-        return $this->singleCommand('post', $request, $client);
+        return $this->simpleRequest('post', $request, $client);
     }
 
     /**
@@ -83,7 +83,7 @@ class GatewayController extends Controller
      */
     public function put(Request $request, RestClient $client)
     {
-        return $this->singleCommand('put', $request, $client);
+        return $this->simpleRequest('put', $request, $client);
     }
 
     /**
@@ -93,7 +93,7 @@ class GatewayController extends Controller
      * @return Response
      * @throws NotImplementedException
      */
-    private function singleCommand($verb, Request $request, RestClient $client)
+    private function simpleRequest($verb, Request $request, RestClient $client)
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($verb) . 's are not implemented yet');
 

@@ -58,6 +58,11 @@ interface ActionContract
     public function getFormat();
 
     /**
+     * @return string
+     */
+    public function getService();
+
+    /**
      * @return bool
      */
     public function isCritical();

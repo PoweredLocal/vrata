@@ -112,7 +112,8 @@ class ParseServices extends Command
                 $carry[] = [
                     'id' => (string)Uuid::generate(4),
                     'method' => $realOperation['method'],
-                    'action' => $route['url'] . $route['path'],
+                    'service_url' => $route['path'],
+                    'service' => $route['service'],
                     'path' => $this->config['global']['prefix'] . $route['path']
                 ];
             }
