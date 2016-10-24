@@ -50,7 +50,7 @@ class GatewayController extends Controller
      */
     public function get(Request $request, RestClient $client)
     {
-        $client->setHeaders(['X-User' => $request->user()->id ?? 1]);
+        $client->setHeaders(['X-User' => $request->user()->id]);
         $parametersJar = $request->getRouteParams();
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
