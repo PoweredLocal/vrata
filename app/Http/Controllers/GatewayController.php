@@ -74,7 +74,7 @@ class GatewayController extends Controller
         return collect(array_keys($output))->reduce(function($carry, $alias) use ($output) {
             $key = $this->config['actions'][$alias]['output_key'] ?? $alias;
 
-            if (! $key) {
+            if (empty($key)) {
                 return array_merge($carry, $output);
             }
 

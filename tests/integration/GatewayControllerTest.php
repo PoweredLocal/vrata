@@ -157,7 +157,7 @@ class RoutingTest extends TestCase {
             'password' => 'my-password'
         ]);
 
-        DB::insert('insert into oauth_clients (user_id, name, password_client) values (?, ?, ?)', [$user->id, 'Test', 1]);
+        DB::insert('insert into oauth_clients (user_id, name, secret, password_client, revoked, personal_access_client, redirect) values (?, ?, ?, ?, ?, ?, ?)', [$user->id, 'Test', '', 1, 0, 0, '']);
 
         $this->post('/oauth/token', [
             'grant_type' => 'password',
