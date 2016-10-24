@@ -1,20 +1,20 @@
 [
     {
-        "id": "06386686-dc0d-470d-a57c-b6edd671d7fa",
+        "id": "f8265280-28a0-4159-bc5b-f7428a65beb2",
         "method": "GET",
         "service_url": "/devices",
         "service": "satu",
         "path": "/v1/devices"
     },
     {
-        "id": "7b6147d8-ac41-4814-95fa-5d9b3a7224ac",
+        "id": "10f0168d-2b0d-4041-b5d4-de4153be7a64",
         "method": "GET",
         "service_url": "/balloons/{id}",
         "service": "satu",
         "path": "/v1/balloons/{id}"
     },
     {
-        "id": "9a0a9156-5302-4279-a123-046d45cbdab1",
+        "id": "764335cf-2639-4402-ae8f-93e6b4f48b62",
         "method": "GET",
         "service_url": "/jokes",
         "service": "dua",

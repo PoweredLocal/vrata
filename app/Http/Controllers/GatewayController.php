@@ -75,7 +75,7 @@ class GatewayController extends Controller
             $key = $this->config['actions'][$alias]['output_key'] ?? $alias;
 
             if (empty($key)) {
-                return array_merge($carry, $output);
+                return array_merge($carry, $output[$alias]);
             }
 
             array_set($carry, $key, $output[$alias]);
