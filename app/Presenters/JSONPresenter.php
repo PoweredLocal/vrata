@@ -33,9 +33,9 @@ class JSONPresenter implements PresenterContract
     private function formatString($input)
     {
         $decoded = json_decode($input, true);
-        if ($decoded !== null) return $input;
+        if ($decoded === null) throw new DataFormatException('Unable to decode input');
 
-        throw new DataFormatException('Unable to decode input');
+        return $this->formatArray($decoded);
     }
 
     /**
@@ -44,6 +44,8 @@ class JSONPresenter implements PresenterContract
      */
     private function formatArray(array $input)
     {
-        return json_encode($input);
+        return json_encode([
+            'data' => $input
+        ]);
     }
 }

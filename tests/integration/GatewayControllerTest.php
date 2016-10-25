@@ -36,7 +36,7 @@ class RoutingTest extends TestCase {
                     ],
                     'settings' => [
                         'service' => 'service1',
-                        'json_key' => 'details.settings',
+                        'output_key' => 'details.settings',
                         'method' => 'GET',
                         'path' => '/posts/{basic%post_id}',
                         'sequence' => 1,
@@ -44,7 +44,7 @@ class RoutingTest extends TestCase {
                     ],
                     'clients' => [
                         'service' => 'service2',
-                        'json_key' => 'details.data',
+                        'output_key' => 'details.clients',
                         'method' => 'GET',
                         'path' => '/data/{basic%post_id}',
                         'sequence' => 1,
@@ -101,8 +101,10 @@ class RoutingTest extends TestCase {
 
         $responses = [
             'basic' => $response1,
-            'clients' => $response3,
-            'settings' => $response2,
+            'details' => [
+                'clients' => $response3,
+                'settings' => $response2,
+            ]
         ];
 
         $this->get('/v1/somewhere/super-page/details', [
@@ -113,7 +115,7 @@ class RoutingTest extends TestCase {
         $this->assertEquals(3, count($this->history));
         $output = json_decode($this->response->getContent(), true);
         $this->assertFalse($output === null);
-        $this->assertEquals($responses, $output);
+        $this->assertEquals($responses, $output['data']);
     }
 
     /**
