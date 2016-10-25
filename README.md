@@ -56,9 +56,10 @@ Since API gateway doesn't have any state really it scales horizontally very well
 
 It's recommended to set this to 'memcached' or another shared cache supported by Lumen if you are running multiple instances of API gateway. API rate limitting relies on cache.
 
-#### DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USERNAME
+#### DB_DATABASE, DB_HOST, DB_PASSWORD, DB_USERNAME, DB_CONNECTION
 
-Standard Lumen variables for your database credentials. Use if you keep users in database 
+Standard Lumen variables for your database credentials. Use if you keep users in database.
+See Laravel/Lumen documentation for the list of supported databases.
 
 #### APP_KEY
 
@@ -84,10 +85,9 @@ JSON object with global settings
 - Aggregate queries (combine output from 2+ APIs)
 - Output restructuring 
 - Aggregate Swagger documentation (combine Swagger docs from underlying services) *
+- Automatic mount of routes based on Swagger JSON
 - Sync and async outgoing requests 
-- DNS service discovery *
-
-* work in progress
+- DNS service discovery 
 
 ## Installation
 
@@ -96,6 +96,39 @@ You can either do a git clone or use composer (Packagist):
 ```bash
 $ composer create-project poweredlocal/vrata
 ```
+
+## Performance
+
+Performance is one of the key indicators of an API gateway and that's why we chose Lumen – bootstrap only takes ~25ms on a basic machine.
+
+See an example of an aggregate request. First let's do separate requests to underlying microservices:
+
+```bash
+$ time curl http://service1.local/devices/5
+{"id":5,"network_id":2,...}
+real    0m0.025s
+
+$ time curl http://service1.local/networks/2
+{"id":2,...}
+real    0m0.025s
+
+$ time curl http://service2.local/visits/2
+[{"id":1,...},{...}]
+real    0m0.041s
+```
+
+So that's 91ms of real OS time – including all the web-server-related overhead. Let's now make a single aggregate request to the API gateway
+which behind the scenes will make the same 3 requests:
+
+```bash
+$ time curl http://gateway.local/devices/5/details
+{"data":{"device":{...},"network":{"settings":{...},"visits":[]}}}
+real    0m0.056s
+```
+
+And it's just 56ms for all 3 requests! Second and third requests were executed in parallel (in async mode). 
+
+This is pretty decent, we think!
 
 ## Copyright
 
