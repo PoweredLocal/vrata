@@ -2,6 +2,7 @@
 
 namespace App\Routing;
 
+use App\Presenters\PresenterContract;
 use Illuminate\Support\Collection;
 
 /**
@@ -39,6 +40,11 @@ interface RouteContract
      * @return Collection
      */
     public function getActions();
+
+    /**
+     * @return PresenterContract
+     */
+    public function getPresenter();
 
     /**
      * @return array

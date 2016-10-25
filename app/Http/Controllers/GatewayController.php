@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\DataFormatException;
 use App\Exceptions\NotImplementedException;
+use App\Presenters\PresenterContract;
 use App\Services\RestClient;
 use App\Http\Request;
 use Illuminate\Http\Response;
@@ -19,6 +20,11 @@ class GatewayController extends Controller
      * @var array
      */
     protected $config;
+
+    /**
+     * @var PresenterContract
+     */
+    protected $presenter;
 
     /**
      * GatewayController constructor.
@@ -41,6 +47,10 @@ class GatewayController extends Controller
                 return $action->getSequence();
             })
             ->sort();
+
+        $this->presenter = $request
+            ->getRoute()
+            ->getPresenter();
     }
 
     /**
@@ -59,9 +69,7 @@ class GatewayController extends Controller
             return array_merge($carry, $responses->getResponses()->toArray());
         }, []);
 
-        return new Response(json_encode($this->rearrangeKeys($output)), 200, [
-            'Content-Type' => 'application/json'
-        ]);
+        return $this->presenter->format($this->rearrangeKeys($output), 200);
     }
 
     /**
@@ -128,6 +136,6 @@ class GatewayController extends Controller
 
         $response = $client->{$verb}($this->actions->first()->getUrl());
 
-        return new Response((string)$response->getBody(), $response->getStatusCode());
+        return $this->presenter->format((string)$response->getBody(), $response->getStatusCode());
     }
 }

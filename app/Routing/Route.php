@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Routing;
+use App\Presenters\JSONPresenter;
+use App\Presenters\PresenterContract;
 
 /**
  * Class Route
@@ -24,12 +26,18 @@ class Route implements RouteContract
     protected $config;
 
     /**
+     * @var PresenterContract
+     */
+    protected $presenter;
+
+    /**
      * Route constructor.
      * @param array $options
      */
     public function __construct(array $options)
     {
         $this->config = $options;
+        $this->presenter = new JSONPresenter();
     }
 
     /**
@@ -88,6 +96,14 @@ class Route implements RouteContract
     public function getActions()
     {
         return collect($this->actions);
+    }
+
+    /**
+     * @return PresenterContract
+     */
+    public function getPresenter()
+    {
+        return $this->presenter;
     }
 
     /**

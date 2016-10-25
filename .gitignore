@@ -1,4 +1,4 @@
 /vendor
 .env
-/databases/database.sqlite
+/database/database.sqlite
 /tests/tmp
