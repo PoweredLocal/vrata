@@ -13,7 +13,7 @@ return (static function() {
             [
                 'aggregate' => true,
                 'method' => 'GET',
-                'path' => '/devices/{mac}/details',
+                'path' => '/v1/devices/{mac}/details',
                 'actions' => [
                     'device' => [
                         'service' => 'core',

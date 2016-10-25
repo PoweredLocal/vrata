@@ -34,29 +34,6 @@ class RouteRegistry
     }
 
     /**
-     * @return void
-     */
-    private function parseConfigRoutes()
-    {
-        $config = config('gateway');
-        if (empty($config)) return;
-
-        collect($config['routes'])->each(function ($route, $key) {
-            $routeObject = new Route(array_merge($route, [
-                'id' => (string)Uuid::generate(4),
-                'path' => config('gateway.global.prefix', '/') . $route['path'],
-                'alias' => $key
-            ]));
-
-            collect($route['actions'])->each(function ($action, $alias) use ($routeObject) {
-                $routeObject->addAction(new Action(array_merge($action, ['alias' => $alias])));
-            });
-
-            $this->addRoute($routeObject);
-        });
-    }
-
-    /**
      * @return bool
      */
     public function isEmpty()
@@ -99,6 +76,17 @@ class RouteRegistry
     }
 
     /**
+     * @return void
+     */
+    private function parseConfigRoutes()
+    {
+        $config = config('gateway');
+        if (empty($config)) return;
+
+        $this->parseRoutes($config['routes']);
+    }
+
+    /**
      * @param string $filename
      * @return RouteRegistry
      */
@@ -111,22 +99,28 @@ class RouteRegistry
         $routes = json_decode(Storage::get($filename), true);
         if ($routes === null) return $registry;
 
-        collect($routes)->each(function ($routeDetails) use ($registry) {
-            $route = new Route([
-                'id' => $routeDetails['id'],
-                'method' => $routeDetails['method'],
-                'path' => $routeDetails['path']
-            ]);
-
-            $route->addAction(new Action([
-                'method' => $routeDetails['method'],
-                'path' => $routeDetails['service_url'],
-                'service' => $routeDetails['service']
-            ]));
-
-            $registry->addRoute($route);
-        });
+        $registry->parseRoutes($routes);
 
         return $registry;
+    }
+
+    /**
+     * @param array $routes
+     */
+    private function parseRoutes(array $routes)
+    {
+        collect($routes)->each(function ($routeDetails) {
+            if (! isset($routeDetails['id'])) {
+                $routeDetails['id'] = (string)Uuid::generate(4);
+            }
+
+            $route = new Route($routeDetails);
+
+            collect($routeDetails['actions'])->each(function ($action, $alias) use ($route) {
+                $route->addAction(new Action(array_merge($action, ['alias' => $alias])));
+            });
+
+            $this->addRoute($route);
+        });
     }
 }
