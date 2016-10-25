@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
+use App\Http\Request;
 
 /**
  * Class RestClient
@@ -36,11 +37,23 @@ class RestClient
      * RestClient constructor.
      * @param Client $client
      * @param ServiceRegistryContract $services
+     * @param Request $request
      */
-    public function __construct(Client $client, ServiceRegistryContract $services)
+    public function __construct(Client $client, ServiceRegistryContract $services, Request $request)
     {
         $this->client = $client;
         $this->services = $services;
+        $this->injectHeaders($request);
+    }
+
+    /**
+     * @param Request $request
+     */
+    private function injectHeaders(Request $request)
+    {
+        $this->setHeaders(
+            ['X-User' => $request->user()->id]
+        );
     }
 
     /**

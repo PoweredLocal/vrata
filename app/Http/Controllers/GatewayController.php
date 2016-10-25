@@ -50,7 +50,6 @@ class GatewayController extends Controller
      */
     public function get(Request $request, RestClient $client)
     {
-        $client->setHeaders(['X-User' => $request->user()->id]);
         $parametersJar = $request->getRouteParams();
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
@@ -119,7 +118,6 @@ class GatewayController extends Controller
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($verb) . 's are not implemented yet');
 
-        $client->setHeaders(['X-User' => $request->user()->id]);
         $client->setBody($request->getContent());
 
         $response = $client->{$verb}($this->actions->first()->getUrl());
