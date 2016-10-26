@@ -134,7 +134,7 @@ class GatewayController extends Controller
 
         $client->setBody($request->getContent());
 
-        $response = $client->{$verb}($this->actions->first()->getUrl());
+        $response = $client->{$verb}($this->actions->first()->first()->getUrl());
 
         return $this->presenter->format((string)$response->getBody(), $response->getStatusCode());
     }
