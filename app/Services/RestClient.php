@@ -168,7 +168,7 @@ class RestClient
         } catch (ConnectException $e) {
             throw new UnableToExecuteRequestException();
         } catch (RequestException $e) {
-            return new PsrResponse((string)$e->getResponse()->getBody(), $e->getResponse()->getStatusCode());
+            return $e->getResponse();
         }
 
         return $response;
