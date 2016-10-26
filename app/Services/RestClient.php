@@ -53,7 +53,10 @@ class RestClient
     private function injectHeaders(Request $request)
     {
         $this->setHeaders(
-            ['X-User' => $request->user()->id]
+            [
+                'X-User' => $request->user()->id,
+                'Content-Type' => $request->getContentType()
+            ]
         );
     }
 
