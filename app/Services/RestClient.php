@@ -55,7 +55,8 @@ class RestClient
         $this->setHeaders(
             [
                 'X-User' => $request->user()->id,
-                'Content-Type' => $request->getContentType()
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json'
             ]
         );
     }
@@ -185,7 +186,8 @@ class RestClient
     private function buildUrl(ActionContract $action, $parametersJar)
     {
         $url = $this->injectParams($action->getUrl(), $parametersJar);
+        if ($url[0] != '/') $url = '/' . $url;
 
-        return $this->services->resolveInstance($action->getService()) . '/' . $url;
+        return $this->services->resolveInstance($action->getService()) . $url;
     }
 }
