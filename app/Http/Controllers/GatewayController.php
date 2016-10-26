@@ -98,7 +98,7 @@ class GatewayController extends Controller
      */
     public function delete(Request $request, RestClient $client)
     {
-        return $this->simpleRequest('delete', $request, $client);
+        return $this->simpleRequest($request, $client);
     }
 
     /**
@@ -108,7 +108,7 @@ class GatewayController extends Controller
      */
     public function post(Request $request, RestClient $client)
     {
-        return $this->simpleRequest('post', $request, $client);
+        return $this->simpleRequest($request, $client);
     }
 
     /**
@@ -118,23 +118,22 @@ class GatewayController extends Controller
      */
     public function put(Request $request, RestClient $client)
     {
-        return $this->simpleRequest('put', $request, $client);
+        return $this->simpleRequest($request, $client);
     }
 
     /**
-     * @param $verb
      * @param Request $request
      * @param RestClient $client
      * @return Response
      * @throws NotImplementedException
      */
-    private function simpleRequest($verb, Request $request, RestClient $client)
+    private function simpleRequest(Request $request, RestClient $client)
     {
-        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($verb) . 's are not implemented yet');
+        if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($request->method()) . 's are not implemented yet');
 
         $client->setBody($request->getContent());
 
-        $response = $client->{$verb}($this->actions->first()->first()->getUrl());
+        $response = $client->syncRequest($this->actions->first()->first(), $request->getRouteParams());
 
         return $this->presenter->format((string)$response->getBody(), $response->getStatusCode());
     }

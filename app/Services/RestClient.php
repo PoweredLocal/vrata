@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\ObjectNotFoundException;
 use App\Exceptions\UnableToExecuteRequestException;
+use App\Routing\ActionContract;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7\Response;
@@ -118,8 +119,7 @@ class RestClient
         $wrapper->setCritical($batch->filter(function($action) { return $action->isCritical(); })->count());
 
         $promises = $batch->reduce(function($carry, $action) use ($parametersJar) {
-            $url = $this->injectParams($action->getUrl(), $parametersJar);
-            $url = $this->services->resolveInstance($action->getService()) . '/' . $url;
+            $url = $this->buildUrl($action, $parametersJar);
             $carry[$action->getAlias()] = $this->client->getAsync($url, $this->guzzleParams);
             return $carry;
         }, []);
@@ -149,6 +149,18 @@ class RestClient
     }
 
     /**
+     * @param ActionContract $action
+     * @param array $parametersJar
+     * @return \Illuminate\Http\Response
+     */
+    public function syncRequest(ActionContract $action, $parametersJar)
+    {
+        return $this->client->{strtolower($action->getMethod())}(
+            $this->buildUrl($action, $parametersJar)
+        );
+    }
+
+    /**
      * @param string $url
      * @param array $params
      * @return string
@@ -160,5 +172,16 @@ class RestClient
         }
 
         return $url;
+    }
+
+    /**
+     * @param ActionContract $action
+     * @param $parametersJar
+     * @return string
+     */
+    private function buildUrl(ActionContract $action, $parametersJar)
+    {
+        $url = $this->injectParams($action->getUrl(), $parametersJar);
+        return $this->services->resolveInstance($action->getService()) . '/' . $url;
     }
 }
