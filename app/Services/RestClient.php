@@ -155,7 +155,7 @@ class RestClient
      */
     public function syncRequest(ActionContract $action, $parametersJar)
     {
-        return $this->client->{strtolower($action->getMethod())}(
+        return $this->{strtolower($action->getMethod())}(
             $this->buildUrl($action, $parametersJar)
         );
     }
@@ -182,6 +182,7 @@ class RestClient
     private function buildUrl(ActionContract $action, $parametersJar)
     {
         $url = $this->injectParams($action->getUrl(), $parametersJar);
+
         return $this->services->resolveInstance($action->getService()) . '/' . $url;
     }
 }
