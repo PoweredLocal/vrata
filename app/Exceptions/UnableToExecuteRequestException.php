@@ -13,7 +13,7 @@ class UnableToExecuteRequestException extends \Exception
      * UnableToExecuteRequestException constructor.
      * @param Response $response
      */
-    public function __construct(Response $response)
+    public function __construct(Response $response = null)
     {
         if ($response) {
             parent::__construct((string)$response->getBody(), $response->getStatusCode());

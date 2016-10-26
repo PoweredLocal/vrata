@@ -2,14 +2,15 @@
 
 namespace App\Services;
 
-use App\Exceptions\ObjectNotFoundException;
 use App\Exceptions\UnableToExecuteRequestException;
 use App\Routing\ActionContract;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use App\Http\Request;
+use Illuminate\Http\Response;
 
 /**
  * Class RestClient
@@ -145,7 +146,7 @@ class RestClient
             if ($wrapper->hasCriticalActions()) throw new UnableToExecuteRequestException($response);
 
             // Do we have an error response from the service?
-            if (! $response) $response = new Response(502, []);
+            if (! $response) $response = new \GuzzleHttp\Psr7\Response(502, []);
             $wrapper->addFailedAction($alias, $response);
         });
 
@@ -155,13 +156,22 @@ class RestClient
     /**
      * @param ActionContract $action
      * @param array $parametersJar
-     * @return \Illuminate\Http\Response
+     * @return Response
+     * @throws UnableToExecuteRequestException
      */
     public function syncRequest(ActionContract $action, $parametersJar)
     {
-        return $this->{strtolower($action->getMethod())}(
-            $this->buildUrl($action, $parametersJar)
-        );
+        try {
+            $response = $this->{strtolower($action->getMethod())}(
+                $this->buildUrl($action, $parametersJar)
+            );
+        } catch (ConnectException $e) {
+            throw new UnableToExecuteRequestException();
+        } catch (RequestException $e) {
+            return new Response((string)$e->getResponse()->getBody(), $e->getResponse()->getStatusCode());
+        }
+
+        return $response;
     }
 
     /**
