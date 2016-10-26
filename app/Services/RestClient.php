@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise;
 use Illuminate\Support\Collection;
 use App\Http\Request;
-use Illuminate\Http\Response;
+use GuzzleHttp\Psr7\Response as PsrResponse;
 
 /**
  * Class RestClient
@@ -146,7 +146,7 @@ class RestClient
             if ($wrapper->hasCriticalActions()) throw new UnableToExecuteRequestException($response);
 
             // Do we have an error response from the service?
-            if (! $response) $response = new \GuzzleHttp\Psr7\Response(502, []);
+            if (! $response) $response = new PsrResponse(502, []);
             $wrapper->addFailedAction($alias, $response);
         });
 
@@ -156,7 +156,7 @@ class RestClient
     /**
      * @param ActionContract $action
      * @param array $parametersJar
-     * @return Response
+     * @return PsrResponse
      * @throws UnableToExecuteRequestException
      */
     public function syncRequest(ActionContract $action, $parametersJar)
@@ -168,7 +168,7 @@ class RestClient
         } catch (ConnectException $e) {
             throw new UnableToExecuteRequestException();
         } catch (RequestException $e) {
-            return new Response((string)$e->getResponse()->getBody(), $e->getResponse()->getStatusCode());
+            return new PsrResponse((string)$e->getResponse()->getBody(), $e->getResponse()->getStatusCode());
         }
 
         return $response;
