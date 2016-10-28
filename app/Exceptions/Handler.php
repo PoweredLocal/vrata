@@ -47,7 +47,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if ($e instanceof UnableToExecuteRequestException) {
-            return new Response($e->getMessage(), $e->getCode());
+            return new Response(json_decode(['errors' => [$e->getMessage()]]), $e->getCode());
         }
 
         return parent::render($request, $e);
