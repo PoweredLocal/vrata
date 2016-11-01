@@ -44,8 +44,22 @@ class JSONPresenter implements PresenterContract
      */
     private function formatArray(array $input)
     {
-        return json_encode([
-            'data' => $input
-        ]);
+        $output = [
+            'errors' => []
+        ];
+
+        if (isset($input['error']) && is_string($input['error'])) {
+            $output['errors'][] = $input['error'];
+            unset($input['error']);
+        }
+
+        if (isset($input['errors']) && is_array($input['errors'])) {
+            $output['errors'][] = $output['errors'] + $input['errors'];
+            unset($input['errors']);
+        }
+
+        $output['data'] = $input;
+
+        return json_encode($output);
     }
 }
