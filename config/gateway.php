@@ -22,6 +22,14 @@ return (static function() {
                         'sequence' => 0,
                         'critical' => true
                     ],
+                    'ping' => [
+                        'service' => 'core',
+                        'output_key' => false,
+                        'method' => 'POST',
+                        'path' => 'devices/{mac}/ping',
+                        'sequence' => 0,
+                        'critical' => false
+                    ],
                     'settings' => [
                         'service' => 'core',
                         'output_key' => 'network.settings',
