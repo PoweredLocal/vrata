@@ -48,11 +48,11 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $e)
     {
         if ($e instanceof UnableToExecuteRequestException) {
-            return new Response(json_decode(['errors' => [$e->getMessage()]]), $e->getCode());
+            return new Response(json_encode(['errors' => [$e->getMessage()]]), $e->getCode());
         }
 
         if ($e instanceof NotFoundHttpException) {
-            return new Response(json_decode(['errors' => ['Resource not found']]), 404);
+            return new Response(json_encode(['errors' => ['Resource not found']]), 404);
         }
 
         return parent::render($request, $e);
