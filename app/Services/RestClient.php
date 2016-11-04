@@ -56,6 +56,7 @@ class RestClient
         $this->setHeaders(
             [
                 'X-User' => $request->user()->id,
+                'X-Client-Ip' => $request->getClientIp(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             ]
