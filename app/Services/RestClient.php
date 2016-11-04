@@ -119,14 +119,15 @@ class RestClient
      * @param $parametersJar
      * @return RestBatchResponse
      */
-    public function asyncGet(Collection $batch, $parametersJar)
+    public function asyncRequest(Collection $batch, $parametersJar)
     {
         $wrapper = new RestBatchResponse();
         $wrapper->setCritical($batch->filter(function($action) { return $action->isCritical(); })->count());
 
         $promises = $batch->reduce(function($carry, $action) use ($parametersJar) {
+            $method = strtolower($action->getMethod());
             $url = $this->buildUrl($action, $parametersJar);
-            $carry[$action->getAlias()] = $this->client->getAsync($url, $this->guzzleParams);
+            $carry[$action->getAlias()] = $this->client->{$method . 'Async'}($url, $this->guzzleParams);
             return $carry;
         }, []);
 

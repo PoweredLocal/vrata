@@ -63,7 +63,7 @@ class GatewayController extends Controller
         $parametersJar = $request->getRouteParams();
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
-            $responses = $client->asyncGet($batch, $parametersJar);
+            $responses = $client->asyncRequest($batch, $parametersJar);
             $parametersJar = array_merge($parametersJar, $responses->exportParameters());
 
             return array_merge($carry, $responses->getResponses()->toArray());
