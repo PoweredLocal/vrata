@@ -133,9 +133,13 @@ class GatewayController extends Controller
     {
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($request->method()) . 's are not implemented yet');
 
-        $client
-            ->setBody($request->getContent())
-            ->setFiles($request->allFiles());
+        $client->setBody($request->getContent());
+
+        if ($request->isMethod('POST') || $request->isMethod('PUT')) {
+            $client
+                ->setFiles($request->allFiles())
+                ->setContentType($request->getContentType());
+        }
 
         $response = $client->syncRequest($this->actions->first()->first(), $request->getRouteParams());
 

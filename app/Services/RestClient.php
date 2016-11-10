@@ -73,6 +73,17 @@ class RestClient
     }
 
     /**
+     * @param $contentType
+     * @return $this
+     */
+    public function setContentType($contentType)
+    {
+        $this->guzzleParams['headers']['Content-Type'] = $contentType;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getHeaders()
