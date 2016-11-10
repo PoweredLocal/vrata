@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use App\Http\Request;
 use GuzzleHttp\Psr7\Response as PsrResponse;
@@ -81,10 +82,32 @@ class RestClient
 
     /**
      * @param string $body
+     * @return $this
      */
     public function setBody($body)
     {
         $this->guzzleParams['body'] = $body;
+
+        return $this;
+    }
+
+    /**
+     * @param array $files
+     * @return $this
+     */
+    public function setFiles($files)
+    {
+        $this->guzzleParams['multipart'] = collect($files)->map(function ($file, $key) {
+            /**
+             * @var UploadedFile $file
+             */
+            return [
+                'name' => $key,
+                'contents' => file_get_contents($file->getRealPath())
+            ];
+        });
+
+        return $this;
     }
 
     /**
@@ -131,8 +154,19 @@ class RestClient
             return $carry;
         }, []);
 
-        $responses = collect(Promise\settle($promises)->wait());
+        return $this->processResponses(
+            $wrapper,
+            collect(Promise\settle($promises)->wait())
+        );
+    }
 
+    /**
+     * @param RestBatchResponse $wrapper
+     * @param Collection $responses
+     * @return RestBatchResponse
+     */
+    private function processResponses(RestBatchResponse $wrapper, Collection $responses)
+    {
         // Process successful responses
         $responses->filter(function ($response) {
             return $response['state'] == 'fulfilled';
