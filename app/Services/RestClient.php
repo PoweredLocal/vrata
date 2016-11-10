@@ -105,7 +105,7 @@ class RestClient
                 'name' => $key,
                 'contents' => file_get_contents($file->getRealPath())
             ];
-        });
+        })->toArray();
 
         return $this;
     }
