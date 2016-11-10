@@ -135,10 +135,8 @@ class GatewayController extends Controller
 
         $client->setBody($request->getContent());
 
-        if ($request->isMethod('POST') || $request->isMethod('PUT')) {
-            $client
-                ->setFiles($request->allFiles())
-                ->setContentType($request->getContentType());
+        if (count($request->allFiles()) !== 0) {
+            $client->setFiles($request->allFiles());
         }
 
         $response = $client->syncRequest($this->actions->first()->first(), $request->getRouteParams());

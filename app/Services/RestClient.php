@@ -84,6 +84,17 @@ class RestClient
     }
 
     /**
+     * @param $contentSize
+     * @return $this
+     */
+    public function setContentSize($contentSize)
+    {
+        $this->guzzleParams['headers']['Content-Length'] = $contentSize;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getHeaders()
@@ -108,15 +119,23 @@ class RestClient
      */
     public function setFiles($files)
     {
-        $this->guzzleParams['multipart'] = collect($files)->map(function ($file, $key) {
-            /**
-             * @var UploadedFile $file
-             */
-            return [
+        // Get rid of everything else
+        $this->setHeaders([
+            'X-User' => $this->getHeaders()['X-User']
+        ]);
+
+        if (isset($this->guzzleParams['body'])) unset($this->guzzleParams['body']);
+
+        $this->guzzleParams['timeout'] = 20;
+        $this->guzzleParams['multipart'] = [];
+
+        foreach ($files as $key => $file) {
+            $this->guzzleParams['multipart'][] = [
                 'name' => $key,
-                'contents' => file_get_contents($file->getRealPath())
+                'contents' => fopen($file->getRealPath(), 'r'),
+                'filename' => $file->getClientOriginalName()
             ];
-        })->toArray();
+        }
 
         return $this;
     }
