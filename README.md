@@ -18,6 +18,8 @@ API gateway is an important component of microservices architectural pattern –
 
 Vrata (Russian for 'gates') is a simple API gateway implemented in PHP7 with Lumen framework
 
+Introductory blog post [in English](https://medium.com/@poweredlocal/developing-a-simple-api-gateway-in-php-and-lumen-f84756cce043#.6yd9uwmat), [in Russian](https://habrahabr.ru/post/315128/)
+
 ## Requirements and dependencies
 
 - PHP >= 7.0
