@@ -12,6 +12,25 @@ use Illuminate\Http\Response;
 class JSONPresenter implements PresenterContract
 {
     /**
+     * @param $input
+     * @return array
+     */
+    public static function safeDecode($input) {
+        // Fix for PHP's issue with empty objects
+        $input = preg_replace('/{\s*}/', "{\"EMPTY_OBJECT\":true}", $input);
+
+        return json_decode($input, true);
+    }
+
+    /**
+     * @param array|object $input
+     * @return string
+     */
+    public static function safeEncode($input) {
+        return preg_replace('/{"EMPTY_OBJECT"\s*:\s*true}/', '{}', json_encode($input));
+    }
+
+    /**
      * @param array|string $input
      * @param $code
      * @return Response
@@ -34,7 +53,7 @@ class JSONPresenter implements PresenterContract
      */
     private function formatString($input)
     {
-        $decoded = json_decode($input, true);
+        $decoded = self::safeDecode($input);
         if ($decoded === null) throw new DataFormatException('Unable to decode input');
 
         return $this->formatArray($decoded);
@@ -60,6 +79,6 @@ class JSONPresenter implements PresenterContract
 
         $output['data'] = $input;
 
-        return json_encode($output);
+        return self::safeEncode($output);
     }
 }

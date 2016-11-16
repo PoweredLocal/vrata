@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use App\Presenters\JSONPresenter;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -65,7 +66,7 @@ class RestBatchResponse
     public function getResponses()
     {
         return collect($this->responses)->map(function ($response) {
-            return json_decode($response, true);
+            return JSONPresenter::safeDecode($response);
         });
     }
 
