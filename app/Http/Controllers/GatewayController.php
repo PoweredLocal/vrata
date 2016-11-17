@@ -46,9 +46,8 @@ class GatewayController extends Controller
             ->groupBy(function ($action) {
                 return $action->getSequence();
             })
-            ->sort(function ($a, $b) {
-                if ($a == $b) { return 0; }
-                return ($a > $b) ? -1 : 1;
+            ->sortBy(function ($batch, $key) {
+                return intval($key);
             });
 
         $this->presenter = $request
