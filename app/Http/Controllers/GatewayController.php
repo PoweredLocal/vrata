@@ -46,7 +46,10 @@ class GatewayController extends Controller
             ->groupBy(function ($action) {
                 return $action->getSequence();
             })
-            ->sort();
+            ->sort(function ($a, $b) {
+                if ($a == $b) { return 0; }
+                return ($a > $b) ? -1 : 1;
+            });
 
         $this->presenter = $request
             ->getRoute()

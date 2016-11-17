@@ -113,6 +113,7 @@ class RoutingTest extends TestCase {
 
         $this->assertEquals(200, $this->response->getStatusCode());
         $this->assertEquals(3, count($this->history));
+
         $output = json_decode($this->response->getContent(), true);
         $this->assertFalse($output === null);
         $this->assertEquals($responses, $output['data']);
