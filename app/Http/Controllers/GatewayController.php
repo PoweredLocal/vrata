@@ -85,11 +85,13 @@ class GatewayController extends Controller
 
             if ($key === false) return $carry;
 
+            $data = $this->config['actions'][$alias]['input_key'] ? $output[$alias][$this->config['actions'][$alias]['input_key']] : $output[$alias];
+
             if (empty($key)) {
-                return array_merge($carry, $output[$alias]);
+                return array_merge($carry, $data);
             }
 
-            array_set($carry, $key, $output[$alias]);
+            array_set($carry, $key, $data);
 
             return $carry;
         }, []);
