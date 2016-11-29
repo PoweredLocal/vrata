@@ -58,7 +58,7 @@ class ParseServices extends Command
             $docRoot = $settings['doc_point'] ?? $this->config['global']['doc_point'];
             $url = $settings['url'] ?? 'http://' . $serviceId . '.' . $this->config['global']['domain'];
 
-            $response = $this->client->request('GET', $url . $docRoot);
+            $response = $this->client->request('GET', $url . $docRoot, ['timeout' => 10.0]);
 
             $data = json_decode((string) $response->getBody(), true);
             if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $serviceId);
@@ -85,7 +85,7 @@ class ParseServices extends Command
             $resource['path'] = reset($pathElements);
             $this->line('Processing API action: ' . $resource['url'] . $resource['path']);
 
-            $response = $this->client->request('GET', $resource['url'] . $resource['docRoot'] . $resource['path']);
+            $response = $this->client->request('GET', $resource['url'] . $resource['docRoot'] . $resource['path'], ['timeout' => 10.0]);
             $data = json_decode((string) $response->getBody(), true);
             if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $resource['serviceId']);
 
