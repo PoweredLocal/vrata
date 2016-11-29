@@ -144,7 +144,8 @@ class GatewayController extends Controller
             $client->setFiles($request->allFiles());
         }
 
-        $response = $client->syncRequest($this->actions->first()->first(), $request->getRouteParams());
+        $parametersJar = array_merge($request->getRouteParams(), ['query_string' => $request->getQueryString()]);
+        $response = $client->syncRequest($this->actions->first()->first(), $parametersJar);
 
         return $this->presenter->format((string)$response->getBody(), $response->getStatusCode());
     }
