@@ -37,7 +37,7 @@ class JSONPresenter implements PresenterContract
      */
     public function format($input, $code)
     {
-        if (empty($input)) return new Response(null, $code);
+        if (empty($input) && ! is_array($input)) return new Response(null, $code);
 
         $serialized = is_array($input) ? $this->formatArray($input) : $this->formatString($input);
 
