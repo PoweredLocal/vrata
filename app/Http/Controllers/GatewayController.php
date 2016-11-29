@@ -8,6 +8,7 @@ use App\Presenters\PresenterContract;
 use App\Services\RestClient;
 use App\Http\Request;
 use Illuminate\Http\Response;
+use Laravel\Lumen\Routing\Controller;
 
 class GatewayController extends Controller
 {
@@ -62,7 +63,7 @@ class GatewayController extends Controller
      */
     public function get(Request $request, RestClient $client)
     {
-        $parametersJar = $request->getRouteParams();
+        $parametersJar = array_merge($request->getRouteParams(), ['query_string' => $request->getQueryString()]);
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
             $responses = $client->asyncRequest($batch, $parametersJar);

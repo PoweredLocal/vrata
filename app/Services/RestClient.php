@@ -263,6 +263,7 @@ class RestClient
     {
         $url = $this->injectParams($action->getUrl(), $parametersJar);
         if ($url[0] != '/') $url = '/' . $url;
+        if (isset($parametersJar['query_string'])) $url .= $parametersJar['query_string'];
 
         return $this->services->resolveInstance($action->getService()) . $url;
     }
