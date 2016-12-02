@@ -56,7 +56,8 @@ class ParseServices extends Command
             $this->info('** Parsing ' . $serviceId);
 
             $docRoot = $settings['doc_point'] ?? $this->config['global']['doc_point'];
-            $url = $settings['url'] ?? 'http://' . $serviceId . '.' . $this->config['global']['domain'];
+            $hostname = $settings['hostname'] ?? $serviceId . '.' . $this->config['global']['domain'];
+            $url = $settings['url'] ?? 'http://' . $hostname;
 
             $response = $this->client->request('GET', $url . $docRoot, ['timeout' => 10.0]);
 
