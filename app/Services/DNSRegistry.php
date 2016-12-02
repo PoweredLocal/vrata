@@ -17,8 +17,8 @@ class DNSRegistry implements ServiceRegistryContract
         $config = config('gateway');
 
         // If service doesn't have a specific URL, simply append global domain to service name
-        $url = $config['services'][$serviceId]['url'] ?? 'http://' . $serviceId . '.' . $config['global']['domain'];
+        $hostname = $config['services'][$serviceId]['hostname'] ?? $serviceId . '.' . $config['global']['domain'];
 
-        return $url;
+        return 'http://' .  $hostname;
     }
 }
