@@ -98,4 +98,39 @@ class AuthTest extends TestCase
 
         $this->assertEquals(200, $this->response->getStatusCode());
     }
+
+    /**
+     * @test
+     */
+    public function client_id_may_have_custom_ttl()
+    {
+        $user = \App\User::create([
+            'email' => 'taylor@laravel.com',
+            'login' => 'dasdasd',
+            'password' => 'my-password'
+        ]);
+
+        DB::insert('insert into oauth_clients (user_id, name, secret, password_client, revoked, personal_access_client, redirect) values (?, ?, ?, ?, ?, ?, ?)', [$user->id, 'Test', '', 1, 0, 0, '']);
+
+        $clientId = $this->app['db.connection']->getPdo()->lastInsertId();
+
+        \Dusterio\LumenPassport\LumenPassport::tokensExpireIn(\Carbon\Carbon::now()->addDays(3), $clientId);
+
+        $response = $this->post('/oauth/token', [
+            'grant_type' => 'password',
+            'client_id' => $clientId,
+            'username' => 'taylor@laravel.com',
+            'password' => 'my-password',
+            'scope' => '*',
+        ]);
+
+        $token = json_decode($this->response->getContent(), true);
+
+        $this->get('/', [
+            'Authorization' => 'Bearer ' . $token['access_token']
+        ]);
+
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertTrue(intval($token['expires_in']) <= 86400 * 3);
+    }
 }
