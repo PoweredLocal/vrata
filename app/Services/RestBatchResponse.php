@@ -77,7 +77,7 @@ class RestBatchResponse
     {
         return collect(array_keys($this->responses))->reduce(function ($carry, $alias) {
             $output = [];
-            $decoded = json_decode($this->responses[$alias], true;
+            $decoded = json_decode($this->responses[$alias], true);
             if ($decoded === null) return $carry;
 
             foreach ($decoded as $key => $value) {
