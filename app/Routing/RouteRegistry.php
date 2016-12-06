@@ -68,22 +68,27 @@ class RouteRegistry
         $this->getRoutes()->each(function ($route) use ($app) {
             $method = strtolower($route->getMethod());
 
+            $middleware = [ 'helper:' . $route->getId() ];
+            if (! $route->isPublic()) $middleware[] = 'auth';
+
             $app->{$method}($route->getPath(), [
                 'uses' => 'App\Http\Controllers\GatewayController@' . $method,
-                'middleware' => [ 'auth', 'helper:' . $route->getId() ]
+                'middleware' => $middleware
             ]);
         });
     }
 
     /**
-     * @return void
+     * @return $this
      */
     private function parseConfigRoutes()
     {
         $config = config('gateway');
-        if (empty($config)) return;
+        if (empty($config)) return $this;
 
         $this->parseRoutes($config['routes']);
+
+        return $this;
     }
 
     /**
@@ -99,13 +104,13 @@ class RouteRegistry
         $routes = json_decode(Storage::get($filename), true);
         if ($routes === null) return $registry;
 
-        $registry->parseRoutes($routes);
-
-        return $registry;
+        // We want to re-parse config routes to allow route overwriting
+        return $registry->parseRoutes($routes)->parseConfigRoutes();
     }
 
     /**
      * @param array $routes
+     * @return $this
      */
     private function parseRoutes(array $routes)
     {
@@ -122,5 +127,7 @@ class RouteRegistry
 
             $this->addRoute($route);
         });
+
+        return $this;
     }
 }

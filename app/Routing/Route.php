@@ -91,6 +91,14 @@ class Route implements RouteContract
     }
 
     /**
+     * @inheritdoc
+     */
+    public function isPublic()
+    {
+        return $this->config['public'] ?? false;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getActions()

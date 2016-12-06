@@ -34,6 +34,11 @@ interface RouteContract
     /**
      * @return bool
      */
+    public function isPublic();
+
+    /**
+     * @return bool
+     */
     public function isAggregate();
 
     /**
