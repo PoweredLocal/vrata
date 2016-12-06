@@ -37,6 +37,11 @@ class RestClient
     ];
 
     /**
+     * @var int
+     */
+    const USER_ID_ANONYMOUS = -1;
+
+    /**
      * RestClient constructor.
      * @param Client $client
      * @param ServiceRegistryContract $services
@@ -56,7 +61,7 @@ class RestClient
     {
         $this->setHeaders(
             [
-                'X-User' => $request->user()->id,
+                'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
                 'X-Client-Ip' => $request->getClientIp(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
