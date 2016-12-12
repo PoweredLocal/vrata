@@ -14,7 +14,6 @@ class AuthTest extends TestCase
     {
         $user = \App\User::create([
             'email' => 'taylor@laravel.com',
-            'login' => 'dasdasd',
             'password' => 'my-password'
         ]);
 
@@ -40,7 +39,6 @@ class AuthTest extends TestCase
     {
         $user = \App\User::create([
             'email' => 'taylor@laravel.com',
-            'login' => 'dasdasd',
             'password' => 'my-password'
         ]);
 
@@ -76,7 +74,6 @@ class AuthTest extends TestCase
     {
         $user = \App\User::create([
             'email' => 'taylor@laravel.com',
-            'login' => 'dasdasd',
             'password' => 'my-password'
         ]);
 
@@ -106,7 +103,6 @@ class AuthTest extends TestCase
     {
         $user = \App\User::create([
             'email' => 'taylor@laravel.com',
-            'login' => 'dasdasd',
             'password' => 'my-password'
         ]);
 

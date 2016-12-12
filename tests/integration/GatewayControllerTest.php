@@ -156,7 +156,6 @@ class RoutingTest extends TestCase {
     {
         $user = \App\User::create([
             'email' => 'taylor@laravel.com',
-            'login' => 'dasdasd',
             'password' => 'my-password'
         ]);
 

@@ -26,6 +26,7 @@ Introductory blog post [in English](https://medium.com/@poweredlocal/developing-
 - Lumen 5.3
 - Guzzle 6
 - Laravel Passport (with [Lumen Passport](https://github.com/dusterio/lumen-passport))
+- Memcached (for request throttling)
 
 ## Running as a Docker container
 
@@ -80,6 +81,19 @@ JSON array of extra routes including any aggregate routes
 #### GATEWAY_GLOBAL
 
 JSON object with global settings
+
+### Logging
+
+Currently only LogEntries is supported out of the box. To send nginx and Lumen logs to LE, simply set two 
+environmetn variables:
+
+#### LOGGING_ID
+
+Identification string for this app
+
+#### LOGGING_LOGENTRIES
+
+Your user key with LogEntries
 
 ## Features
 
