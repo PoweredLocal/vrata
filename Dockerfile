@@ -22,6 +22,7 @@ ADD vendor /home/app/vendor
 ADD tests/ /home/app/tests
 ADD phpunit.xml /home/app/
 ADD ci/start.sh /
+ADD ci/logs-logentries.sh /root/
 
 EXPOSE 80
 

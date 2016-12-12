@@ -21,6 +21,11 @@ do
  sed -i "s/^\($key\).*/\1 $(eval echo \${$key})/" /etc/php/7.0/fpm/php.ini
 done
 
+# Start logging daemons if necessary
+if [ -n ${LOGGING_LOGENTRIES} -a -n ${LOGGING_ID} ]; then 
+  /root/logs-logentries.sh  
+fi
+
 # Start up PHP FPM
 /bin/echo clear_env = no >> /etc/php/7.0/fpm/pool.d/www.conf
 /usr/sbin/php-fpm7.0
