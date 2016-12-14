@@ -70,13 +70,34 @@ Lumen application key
 
 ### Gateway variables
 
+#### PRIVATE_KEY
+
+Put your private RSA key in this variable
+
+You can generate the key with OpenSSL:
+
+```bash
+$ openssl genrsa -out private.key 4096
+```
+
+Replace new line characters with \n:
+```bash
+awk 1 ORS='\\n' private.key
+```
+
 #### PUBLIC_KEY
 
 Put your public RSA key in this variable
 
-#### PRIVATE_KEY
+Extract public key using OpenSSL:
+```bash
+$ openssl rsa -in private.key -pubout > public.key
+```
 
-Put your private RSA key in this variable
+Replace new line characters with \n:
+```bash
+awk 1 ORS='\\n' public.key
+```
 
 #### GATEWAY_SERVICES
 
