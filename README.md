@@ -70,6 +70,14 @@ Lumen application key
 
 ### Gateway variables
 
+#### PUBLIC_KEY
+
+Put your public RSA key in this variable
+
+#### PRIVATE_KEY
+
+Put your private RSA key in this variable
+
 #### GATEWAY_SERVICES
 
 JSON array of microservices behind the API gateway

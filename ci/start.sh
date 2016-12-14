@@ -12,6 +12,10 @@ rm -rf /home/app/storage/cache/*
 # Import routes from services
 /usr/bin/php /home/app/artisan gateway:parse
 
+# Create key files
+echo ${PRIVATE_KEY} > /home/app/storage/oauth-private.key
+echo ${PUBLIC_KEY} > /home/app/storage/oauth-public.key
+
 # Increase limits
 upload_max_filesize=20M
 post_max_size=20M
