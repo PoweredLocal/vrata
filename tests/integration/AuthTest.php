@@ -99,6 +99,37 @@ class AuthTest extends TestCase
     /**
      * @test
      */
+    public function user_can_see_details_about_his_account()
+    {
+        $user = \App\User::create([
+            'email' => 'taylor@laravel.com',
+            'password' => 'my-password'
+        ]);
+
+        DB::insert('insert into oauth_clients (user_id, name, secret, password_client, revoked, personal_access_client, redirect) values (?, ?, ?, ?, ?, ?, ?)', [$user->id, 'Test', '', 1, 0, 0, '']);
+
+        $response = $this->post('/oauth/token', [
+            'grant_type' => 'password',
+            'client_id' => $this->app['db.connection']->getPdo()->lastInsertId(),
+            'username' => 'taylor@laravel.com',
+            'password' => 'my-password',
+            'scope' => '*',
+        ]);
+
+        $token = json_decode($this->response->getContent(), true);
+
+        $this->get('/me', [
+            'Authorization' => 'Bearer ' . $token['access_token']
+        ]);
+
+        $decoded = json_decode($this->response->getContent(), true);
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertEquals('taylor@laravel.com', $decoded['email']);
+    }
+
+    /**
+     * @test
+     */
     public function client_id_may_have_custom_ttl()
     {
         $user = \App\User::create([
