@@ -27,7 +27,7 @@ class JSONPresenter implements PresenterContract
      * @return string
      */
     public static function safeEncode($input) {
-        return preg_replace('/{"EMPTY_OBJECT"\s*:\s*true}/', '{}', json_encode($input));
+        return preg_replace('/{"EMPTY_OBJECT"\s*:\s*true}/', '{}', json_encode($input, JSON_UNESCAPED_SLASHES));
     }
 
     /**
