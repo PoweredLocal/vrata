@@ -255,7 +255,7 @@ class RestClient
     {
         foreach ($params as $key => $value) {
             if (is_array($value)) {
-                $url = $this->injectParams($url, $value, $key . '.');
+                $url = $this->injectParams($url, $value, $prefix . $key . '.');
             }
 
             if (is_string($value) || is_numeric($value)) {
