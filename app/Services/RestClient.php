@@ -248,12 +248,19 @@ class RestClient
     /**
      * @param string $url
      * @param array $params
+     * @param string $prefix
      * @return string
      */
-    private function injectParams($url, array $params)
+    private function injectParams($url, array $params, $prefix = '')
     {
         foreach ($params as $key => $value) {
-            $url = str_replace("{" . $key . "}", $value, $url);
+            if (is_array($value)) {
+                $url = $this->injectParams($url, $value, $key . '.');
+            }
+
+            if (is_string($value) || is_numeric($value)) {
+                $url = str_replace("{" . $prefix . $key . "}", $value, $url);
+            }
         }
 
         return $url;
