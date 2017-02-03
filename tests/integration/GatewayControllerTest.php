@@ -16,6 +16,9 @@ class RoutingTest extends TestCase {
      */
     protected $history = [];
 
+    /**
+     * @var array
+     */
     protected $mockRoutes = ['gateway' => [
         'services' => [
             'service1' => [],
@@ -101,6 +104,180 @@ class RoutingTest extends TestCase {
 
         $responses = [
             'basic' => $response1,
+            'details' => [
+                'clients' => $response3,
+                'settings' => $response2,
+            ]
+        ];
+
+        $this->get('/v1/somewhere/super-page/details', [
+            'Authorization' => 'Bearer ' . $this->getUser()
+        ]);
+
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertEquals(3, count($this->history));
+
+        $output = json_decode($this->response->getContent(), true);
+        $this->assertFalse($output === null);
+        $this->assertEquals($responses, $output['data']);
+    }
+
+    /**
+     * @test
+     */
+    public function output_object_key_can_be_specified_for_an_action()
+    {
+        $routes = $this->mockRoutes;
+
+        $routes['gateway']['routes'][0]['actions']['basic'] =
+            [
+                'service' => 'service1',
+                'method' => 'GET',
+                'path' => '/pages/{page}',
+                'sequence' => 0,
+                'output_key' => 'garbage'
+            ];
+
+        config($routes);
+
+        $this->app->singleton(RouteRegistry::class, function() {
+            return new RouteRegistry;
+        });
+
+        $this->app->make(RouteRegistry::class)->bind(app());
+
+        $response1 = ['id' => 5123123, 'title' => 'Some title', 'post_id' => 5];
+        $response2 = ['book_id' => 5];
+        $response3 = ['more_data' => 'something'];
+
+        $this->mockGuzzle([
+            new Response(200, [], json_encode($response1)),
+            new Response(500, [], json_encode($response2)),
+            new Response(200, [], json_encode($response3))
+        ]);
+
+        $responses = [
+            'garbage' => $response1,
+            'details' => [
+                'clients' => $response3,
+                'settings' => $response2,
+            ]
+        ];
+
+        $this->get('/v1/somewhere/super-page/details', [
+            'Authorization' => 'Bearer ' . $this->getUser()
+        ]);
+
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertEquals(3, count($this->history));
+
+        $output = json_decode($this->response->getContent(), true);
+        $this->assertFalse($output === null);
+        $this->assertEquals($responses, $output['data']);
+    }
+
+    /**
+     * @test
+     */
+    public function output_can_be_mutated_for_an_action()
+    {
+        $routes = $this->mockRoutes;
+
+        $routes['gateway']['routes'][0]['actions']['basic'] =
+            [
+                'service' => 'service1',
+                'method' => 'GET',
+                'path' => '/pages/{page}',
+                'sequence' => 0,
+                'output_key' => [
+                    'id' => 'garbage_id',
+                    'title' => 'garbage_title'
+                ]
+            ];
+
+        config($routes);
+
+        $this->app->singleton(RouteRegistry::class, function() {
+            return new RouteRegistry;
+        });
+
+        $this->app->make(RouteRegistry::class)->bind(app());
+
+        $response1 = ['id' => 5123123, 'title' => 'Some title', 'post_id' => 5];
+        $response2 = ['book_id' => 5];
+        $response3 = ['more_data' => 'something'];
+
+        $this->mockGuzzle([
+            new Response(200, [], json_encode($response1)),
+            new Response(500, [], json_encode($response2)),
+            new Response(200, [], json_encode($response3))
+        ]);
+
+        $responses = [
+            'garbage_id' => $response1['id'],
+            'garbage_title' => $response1['title'],
+            'details' => [
+                'clients' => $response3,
+                'settings' => $response2,
+            ]
+        ];
+
+        $this->get('/v1/somewhere/super-page/details', [
+            'Authorization' => 'Bearer ' . $this->getUser()
+        ]);
+
+        $this->assertEquals(200, $this->response->getStatusCode());
+        $this->assertEquals(3, count($this->history));
+
+        $output = json_decode($this->response->getContent(), true);
+        $this->assertFalse($output === null);
+        $this->assertEquals($responses, $output['data']);
+    }
+
+    /**
+     * @test
+     */
+    public function mutated_output_supports_root_property()
+    {
+        $routes = $this->mockRoutes;
+
+        $routes['gateway']['routes'][0]['actions']['basic'] =
+            [
+                'service' => 'service1',
+                'method' => 'GET',
+                'path' => '/pages/{page}',
+                'sequence' => 0,
+                'output_key' => [
+                    'id' => 'garbage_id',
+                    'title' => 'garbage_title',
+                    '*' => 'garbage'
+                ]
+            ];
+
+        config($routes);
+
+        $this->app->singleton(RouteRegistry::class, function() {
+            return new RouteRegistry;
+        });
+
+        $this->app->make(RouteRegistry::class)->bind(app());
+
+        $response1 = ['id' => 5123123, 'title' => 'Some title', 'post_id' => 5];
+        $response2 = ['book_id' => 5];
+        $response3 = ['more_data' => 'something'];
+
+        $this->mockGuzzle([
+            new Response(200, [], json_encode($response1)),
+            new Response(500, [], json_encode($response2)),
+            new Response(200, [], json_encode($response3))
+        ]);
+
+        $responses = [
+            'garbage_id' => $response1['id'],
+            'garbage_title' => $response1['title'],
+            'garbage' => [
+                'post_id' => $response1['post_id']
+            ],
             'details' => [
                 'clients' => $response3,
                 'settings' => $response2,

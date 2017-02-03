@@ -142,6 +142,41 @@ You can either do a git clone or use composer (Packagist):
 $ composer create-project poweredlocal/vrata
 ```
 
+## Features
+
+### Basic output mutation
+
+You can do basic JSON output mutation using ```output``` property of an action. Eg.
+```php
+[
+    'service' => 'service1',
+    'method' => 'GET',
+    'path' => '/pages/{page}',
+    'sequence' => 0,
+    'output_key' => 'data'
+];
+```
+
+Response from *service1* will be included in the final output as *data* key. 
+
+```output_key``` can be an array to allow further mutation:
+```php
+[
+    'service' => 'service1',
+    'method' => 'GET',
+    'path' => '/pages/{page}',
+    'sequence' => 0,
+    'output_key' => [
+        'id' => 'service_id',
+        'title' => 'service_title',
+        '*' => 'service_more'
+    ]
+];
+```
+
+This will assign contents of *id* property to *garbage_id*, *title* to *service_title*
+and the rest of the content will be inside of *service_more* property of the output JSON.
+
 ## Performance
 
 Performance is one of the key indicators of an API gateway and that's why we chose Lumen – bootstrap only takes ~25ms on a basic machine.

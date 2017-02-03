@@ -92,7 +92,23 @@ class GatewayController extends Controller
                 return array_merge($carry, $data);
             }
 
-            array_set($carry, $key, $data);
+            if (is_string($key)) {
+                array_set($carry, $key, $data);
+            }
+
+            if (is_array($key)) {
+                collect($key)->each(function($outputKey, $property) use (&$data, &$carry, $key) {
+                    if ($property == '*') {
+                        array_set($carry, $outputKey, $data);
+                        return;
+                    }
+
+                    if (isset($data[$property])) {
+                        array_set($carry, $outputKey, $data[$property]);
+                        unset($data[$property]);
+                    }
+                });
+            }
 
             return $carry;
         }, []);
