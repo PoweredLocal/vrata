@@ -28,6 +28,7 @@ EXPOSE 80
 
 RUN rm /etc/nginx/sites-enabled/default
 ADD ci/site.conf /etc/nginx/sites-enabled/site.conf
+ADD ci/log.conf /etc/nginx/conf.d/log.conf
 
 # Use baseimage-docker's init process.
 ENTRYPOINT ["/bin/sh", "/start.sh"]
