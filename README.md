@@ -210,6 +210,50 @@ And it's just 56ms for all 3 requests! Second and third requests were executed i
 
 This is pretty decent, we think!
 
+## Examples
+
+### Example 1: Single, simple microservice
+
+Let's say we have a very simple setup: API Gateway + one microservice behind it.
+
+First, we need to let the gateway know about this microservice by adding it to GATEWAY_SERVICES environment variable.
+
+```json
+{
+	"service": []
+}
+```
+
+Where *service* is the nickname we chose for our microservice. The array is empty because we will rely on default settings.
+Our service has a valid Swagger documentation endpoint running on ```api/doc``` URL.
+
+Next, we provide global settings on GATEWAY_GLOBAL environment variable:
+
+```json
+{
+	"prefix": "/v1",
+	"timeout": 3.0,
+	"doc_point": "/api/doc",
+	"domain": "supercompany.io"
+}
+```
+
+This tells the gateway that services that don't have explicit URLs provided, will be communicated at
+{serviceId}.{domain}, therefore our service will be contacted at service.supercompany.io, request timeout will be 3 seconds,
+Swagger documentation will be loaded from ```/api/doc``` and all routes will be prefixed with "v1".
+
+We could however specify service's hostname explicitly using "hostname" key in the GATEWAY_SERVICES array.
+
+Now we can run ```php artisan gateway:parse``` to force Vrata to parse Swagger documentation
+provided by this service. All documented routes will be exposed in this API gateway.
+
+If you use our Docker image, this command will be executed every time you start a container.
+
+Now, if your service had a route ```GET http://service.supercompany.io/users```, it will be available as
+```GET http://api-gateway.supercompany.io/v1/users``` and all requests will be subject to JSON Web Token check and rate limiting.
+
+Don't forget to set PRIVATE_KEY and PUBLIC_KEY environment variables, they are necessary for authentication to work.
+
 ## License
 
 The MIT License (MIT)
