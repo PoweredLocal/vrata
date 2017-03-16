@@ -62,7 +62,7 @@ class RestClient
         $this->setHeaders(
             [
                 'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
-                'X-Token-Scopes' => ! empty($request->user()->accessToken) ? implode(',', $request->user()->accessToken->scopes) : '',
+                'X-Token-Scopes' => ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
                 'X-Client-Ip' => $request->getClientIp(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
@@ -126,9 +126,7 @@ class RestClient
     public function setFiles($files)
     {
         // Get rid of everything else
-        $this->setHeaders([
-            'X-User' => $this->getHeaders()['X-User']
-        ]);
+        $this->setHeaders(array_intersect_key($this->getHeaders(), ['X-User' => null, 'X-Token-Scopes' => null]));
 
         if (isset($this->guzzleParams['body'])) unset($this->guzzleParams['body']);
 
