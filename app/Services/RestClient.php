@@ -62,7 +62,7 @@ class RestClient
         $this->setHeaders(
             [
                 'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
-                'X-Token-Scopes' => ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
+                'X-Token-Scopes' => $request->user() && ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
                 'X-Client-Ip' => $request->getClientIp(),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
