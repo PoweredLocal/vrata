@@ -33,7 +33,8 @@ class RestClient
      * @var array
      */
     protected $guzzleParams = [
-        'headers' => []
+        'headers' => [],
+        'timeout' => 10
     ];
 
     /**
