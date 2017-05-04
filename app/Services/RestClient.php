@@ -65,6 +65,7 @@ class RestClient
                 'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
                 'X-Token-Scopes' => $request->user() && ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
                 'X-Client-Ip' => $request->getClientIp(),
+                'User-Agent' => $request->header('User-Agent'),
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json'
             ]
