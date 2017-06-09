@@ -144,6 +144,97 @@ $ composer create-project poweredlocal/vrata
 
 ## Features
 
+### Auto-import of Swagger-compliant endpoints
+
+You can define URL(s) of Swagger documentation endpoints - a default URL and custom per-service URLs if necessary.
+Imagine you have a Symfony2 microservice with Nelmio ApiDoc plugin running on `/api/doc`. Your microservice
+returns something like:
+
+```bash
+$ curl -v http://localhost:8000/api/doc
+{
+	"swaggerVersion": "1.2",
+	"apis": [{
+		"path": "\/uploads",
+		"description": "Operations on file uploads."
+	}],
+	"apiVersion": "0.1",
+	"info": {
+		"title": "Symfony2",
+		"description": "My awesome Symfony2 app!"
+	},
+	"authorizations": []
+}
+
+$ curl -v http://localhost:8000/api/doc/uploads
+{
+	"swaggerVersion": "1.2",
+	"apiVersion": "0.1",
+	"basePath": "\/api",
+	"resourcePath": "\/uploads",
+	"apis": [{
+		"path": "\/uploads",
+		"operations": [{
+			"method": "GET",
+			"summary": "Retrieve list of files",
+			"nickname": "get_uploads",
+			"parameters": [],
+			"responseMessages": [{
+				"code": 200,
+				"message": "Returned when successful",
+				"responseModel": "AppBundle.Entity.Upload[items]"
+			}, {
+				"code": 500,
+				"message": "Authorization error or any other problem"
+			}],
+			"type": "AppBundle.Entity.Upload[items]"
+		}
+	},
+	"produces": [],
+	"consumes": [],
+	"authorizations": []
+}
+```
+
+This endpoint may be auto-imported to API gateway during container start (or whenever you see it fit).
+
+Assuming this microservice is listed in *GATEWAY_SERVICES*, we can now run auto-import:
+
+```bash
+$ php artisan gateway:parse                                                                                                                                              
+** Parsing service1                                                                                                                                                         
+Processing API action: http://localhost:8000/uploads                                                                                                                
+Dumping route data to JSON file                                                                                                                                          
+Finished!                                                                       
+```
+
+That's it - Vrata will now "proxy" all requests for `/uploads` to this microservice.
+
+### OAuth2 authentication
+
+Vrata ships with Laravel Passport - a fully featured OAuth2 server. JSON Web Tokens are used to authenticate all
+API requests, and currently only local persistence (database) is supported. However, it's trivial
+to move OAuth2 server outside and rely on JWT token verification using public keys.
+
+If incoming bearer token is invalid, Vrata will return 401 Non Authorized error. If the token is valid,
+Vrata will add two extra headers when making requests to underlying microservices:
+
+*X-User*
+
+Numeric subject Id extracted from the JSON Web Token. Your microservices can always assume the authentication
+part is done already and trust this user Id. If you want to implement authorization, you may base it on
+this Id or on token scopes (see below).
+
+*X-Token-Scopes*
+
+Token scopes extracted from the JSON web token. Comma separated (eg. ```read,write```)
+
+Your microservice may use these for authorization purposes (restrict certain actions, etc). 
+
+*X-Client-Ip*
+
+Original user IP address.
+
 ### Basic output mutation
 
 You can do basic JSON output mutation using ```output``` property of an action. Eg.
@@ -157,7 +248,7 @@ You can do basic JSON output mutation using ```output``` property of an action. 
 ];
 ```
 
-Response from *service1* will be included in the final output as *data* key. 
+Response from *service1* will be included in the final output under *data* key. 
 
 ```output_key``` can be an array to allow further mutation:
 ```php
