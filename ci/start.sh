@@ -23,7 +23,7 @@ memory_limit=256M
 
 for key in upload_max_filesize post_max_size memory_limit
 do
- sed -i "s/^\($key\).*/\1 $(eval echo \${$key})/" /etc/php/7.0/fpm/php.ini
+ sed -i "s/^\($key\).*/\1 = $(eval echo \${$key})/" /etc/php/7.0/fpm/php.ini
 done
 
 # Start logging daemons if necessary
