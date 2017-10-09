@@ -19,6 +19,7 @@ echo ${PUBLIC_KEY} > /home/app/storage/oauth-public.key
 # Increase limits
 upload_max_filesize=20M
 post_max_size=20M
+memory_limit=256M
 
 for key in upload_max_filesize post_max_size
 do
