@@ -3,6 +3,7 @@
 namespace App\Routing;
 use App\Presenters\JSONPresenter;
 use App\Presenters\PresenterContract;
+use App\Presenters\RawPresenter;
 
 /**
  * Class Route
@@ -37,7 +38,7 @@ class Route implements RouteContract
     public function __construct(array $options)
     {
         $this->config = $options;
-        $this->presenter = new JSONPresenter();
+        $this->presenter = $this->isRaw() ? new RawPresenter() : new JSONPresenter();
     }
 
     /**
@@ -96,6 +97,14 @@ class Route implements RouteContract
     public function isPublic()
     {
         return $this->config['public'] ?? false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isRaw()
+    {
+        return $this->config['raw'] ?? false;
     }
 
     /**
