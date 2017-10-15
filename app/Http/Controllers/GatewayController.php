@@ -63,6 +63,8 @@ class GatewayController extends Controller
      */
     public function get(Request $request, RestClient $client)
     {
+        if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
+
         $parametersJar = array_merge($request->getRouteParams(), ['query_string' => $request->getQueryString()]);
 
         $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
