@@ -168,6 +168,15 @@ class RestClient
      * @param $url
      * @return \Psr\Http\Message\ResponseInterface
      */
+    public function get($url)
+    {
+        return $this->client->get($url, $this->guzzleParams);
+    }
+
+    /**
+     * @param $url
+     * @return \Psr\Http\Message\ResponseInterface
+     */
     public function delete($url)
     {
         return $this->client->delete($url, $this->guzzleParams);
