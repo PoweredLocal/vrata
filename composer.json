@@ -9,7 +9,6 @@
         "laravel/lumen-framework": "5.3.*",
 	"doctrine/dbal": "~2.3",
         "vlucas/phpdotenv": "~2.2",
-        "laravel/passport": "^0.2.2",
         "appzcoder/lumen-routes-list": "^1.0",
         "dusterio/lumen-passport": "^0.2",
         "guzzlehttp/guzzle": "~6.0",
