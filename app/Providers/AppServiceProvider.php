@@ -48,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
 
         Passport::tokensExpireIn(Carbon::now()->addDays(15));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30));
+	LumenPassport::routes($this->app);
         LumenPassport::tokensExpireIn(Carbon::now()->addYears(50), 2);
         LumenPassport::allowMultipleTokens();
     }
