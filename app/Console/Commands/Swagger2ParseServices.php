@@ -50,7 +50,7 @@ class Swagger2ParseServices extends Command
     /**
      * @return array
      */
-    private function getActions()
+    protected function getActions()
     {
         $actions = [];
         
@@ -74,6 +74,9 @@ class Swagger2ParseServices extends Command
                         'id' => (string)Uuid::generate(4),
                         'method' => $method,
                         'path' => (empty($prefix) ? $this->config['global']['prefix'] : $prefix) . $path,
+                        'url' => $url,
+                        'service' => $serviceId,
+                        'docRoot' => $docRoot,
                         'actions' => [[
                             'method' => $method,
                             'service' => $serviceId,
