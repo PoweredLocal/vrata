@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\CombineDocs;
 use App\Console\Commands\ParseServices;
+use App\Console\Commands\Swagger2ParseServices;
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
 
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         ParseServices::class,
+        Swagger2ParseServices::class,
         CombineDocs::class
     ];
 
