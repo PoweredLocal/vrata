@@ -158,7 +158,7 @@ class ParseServicesTest extends TestCase
         $command = new ParseServices($client, $this->mockConfig);
         $command->setLaravel($this->app);
         $this->assertEquals(ParseServices::class, get_class($command));
-        $command->run(new \Symfony\Component\Console\Input\ArgvInput(), new \Symfony\Component\Console\Output\NullOutput());
+        $command->run(new \Symfony\Component\Console\Input\ArgvInput([]), new \Symfony\Component\Console\Output\NullOutput());
 
         $this->assertEquals(2, count($container));
     }
@@ -166,7 +166,7 @@ class ParseServicesTest extends TestCase
     /**
      * @test
      * @covers \App\Console\Commands\ParseServices::getPaths
-     * @covers \App\Console\Commands\ParseServices::getResources
+     * @covers \App\Console\Commands\ParseServices::getRoot
      * @covers \App\Console\Commands\ParseServices::getActions
      */
     public function requests_are_made_to_services()
@@ -189,7 +189,7 @@ class ParseServicesTest extends TestCase
         $command = new ParseServices($client, $this->mockConfig);
         $command->setLaravel($this->app);
         $this->assertEquals(ParseServices::class, get_class($command));
-        $command->run(new \Symfony\Component\Console\Input\ArgvInput(), new \Symfony\Component\Console\Output\NullOutput());
+        $command->run(new \Symfony\Component\Console\Input\ArgvInput([]), new \Symfony\Component\Console\Output\NullOutput());
 
         $this->assertEquals(5, count($container));
 
@@ -203,5 +203,35 @@ class ParseServicesTest extends TestCase
         })->toArray();
 
         $this->assertEquals($this->expectedRoutes, $routes);
+    }
+
+    /**
+     * @test
+     * @covers \App\Console\Commands\ParseServices::getRoot
+     */
+    public function swagger2_output_is_parsed_correctly()
+    {
+        $container = [];
+        $history = Middleware::history($container);
+
+        $mock = new MockHandler([
+            new \GuzzleHttp\Psr7\Response(200, [], file_get_contents(base_path('tests/artefacts/core-v2.json'))),
+            new \GuzzleHttp\Psr7\Response(200, [], file_get_contents(base_path('tests/artefacts/core-v2.json'))),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+        $handler->push($history);
+
+        $client = new Client(['handler' => $handler]);
+        $command = new ParseServices($client, $this->mockConfig);
+        $command->setLaravel($this->app);
+        $this->assertEquals(ParseServices::class, get_class($command));
+        $command->run(new \Symfony\Component\Console\Input\ArgvInput([]), new \Symfony\Component\Console\Output\NullOutput());
+
+        $this->assertEquals(2, count($container));
+
+        $routes = Storage::get('routes.json');
+        $routes = json_decode($routes, true);
+        $this->assertTrue($routes !== null);
     }
 }

@@ -50,7 +50,7 @@ class ParseServices extends Command
     /**
      * @return Collection
      */
-    private function getResources()
+    private function getRoot()
     {
         return collect($this->config['services'])->map(function($settings, $serviceId) {
             $this->info('** Parsing ' . $serviceId);
@@ -63,16 +63,63 @@ class ParseServices extends Command
 
             $data = json_decode((string) $response->getBody(), true);
             if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $serviceId);
-            if (! isset($data['apis'])) throw new DataFormatException($serviceId . ' doesn\'t contain API data');
 
-            return collect($data['apis'])->map(function ($api) use ($url, $serviceId, $docRoot) {
-                return array_merge($api, [
-                    'url' => $url,
-                    'service' => $serviceId,
-                    'docRoot' => $docRoot,
-                ]);
-            });
+            if (isset($data['swaggerVersion']) && isset($data['apis']) && preg_match('/^1\./', $data['swaggerVersion']))
+                return $this->injectSettings($this->parseSwaggerResources($data['apis']), $url, $docRoot, $serviceId);
+
+            if (isset($data['swagger']) && preg_match('/^2\./', $data['swagger']) && isset($data['paths']))
+                return $this->injectSettings($this->parseSwaggerTwo($data), $url, $docRoot, $serviceId);
+
+            throw new DataFormatException($serviceId . ' doesn\'t contain API data');
         })->flatten(1);
+    }
+
+    /**
+     * @param Collection $data
+     * @param string $url
+     * @param string $docRoot
+     * @param string $serviceId
+     * @return Collection
+     */
+    protected function injectSettings(Collection $data, $url, $docRoot, $serviceId)
+    {
+        return $data->map(function($input) use ($url, $serviceId, $docRoot) {
+            return array_merge($input, [
+                'url' => $url,
+                'service' => $serviceId,
+                'docRoot' => $docRoot,
+            ]);
+        });
+    }
+
+    /**
+     * Parse an array of Swagger V1 resources (root level)
+     *
+     * @param array $resources
+     * @return Collection
+     */
+    protected function parseSwaggerResources(array $resources)
+    {
+        return collect($resources)->map(function ($api) {
+            return $api;
+        });
+    }
+
+    /**
+     * Parse a Swagger V2 output
+     *
+     * @param array $swagger
+     * @return Collection
+     */
+    protected function parseSwaggerTwo(array $swagger)
+    {
+        return collect($swagger['paths'])->map(function($data, $path) {
+            return [
+                'path' => $path,
+                'description' => isset($data['description']) ? $data['description'] : '',
+                'swagger2-data' => $data
+            ];
+        });
     }
 
     /**
@@ -86,16 +133,26 @@ class ParseServices extends Command
             $resource['path'] = reset($pathElements);
             $this->line('Processing API action: ' . $resource['url'] . $resource['path']);
 
-            $response = $this->client->request('GET', $resource['url'] . $resource['docRoot'] . $resource['path'], ['timeout' => 10.0]);
-            $data = json_decode((string) $response->getBody(), true);
-            if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $resource['serviceId']);
+            if (! isset($resource['swagger2-data'])) {
+                $response = $this->client->request('GET', $resource['url'] . $resource['docRoot'] . $resource['path'], ['timeout' => 10.0]);
+                $data = json_decode((string) $response->getBody(), true);
+                if ($data === null) throw new DataFormatException('Unable to get JSON response from ' . $resource['serviceId']);
 
-            // Inject service details
-            $apis = collect($data['apis'])->map(function ($api) use ($resource) {
-                return array_merge($resource, $api);
-            });
+                // Inject service details
+                $apis = collect($data['apis'])->map(function ($api) use ($resource) {
+                    return array_merge($resource, $api);
+                });
 
-            return array_merge($carry, $apis->toArray());
+                return array_merge($carry, $apis->toArray());
+            }
+
+            return array_merge($carry, [array_merge($resource, [
+                'operations' =>
+                    collect($resource['swagger2-data'])->map(function($data, $method) {
+                        return ['method' => strtoupper($method)];
+                    })->toArray(),
+                'swagger2-data' => null
+            ])]);
         }, []);
     }
 
@@ -137,7 +194,7 @@ class ParseServices extends Command
     {
         $output = $this->getActions(
             collect($this->getPaths(
-                $this->getResources()
+                $this->getRoot()
             ))
         );
 

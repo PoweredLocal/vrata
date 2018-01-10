@@ -1,0 +1,409 @@
+{
+  "info": {
+    "title": "PoweredLocal Core API",
+    "version": "0.0.1"
+  },
+  "swagger": "2.0",
+  "produces": ["application/json"],
+  "host": "core.prod.pwred.com",
+  "tags": [{
+    "name": "devices",
+    "description": "Operations about devices"
+  }, {
+    "name": "networks",
+    "description": "Operations about networks"
+  }],
+  "paths": {
+    "/devices": {
+      "get": {
+        "summary": "List all devices.",
+        "description": "List all devices.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "List all devices."
+          }
+        },
+        "tags": ["devices"],
+        "operationId": "getDevices"
+      },
+      "post": {
+        "summary": "Create a device.",
+        "description": "Create a device.",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
+        "parameters": [{
+          "in": "formData",
+          "name": "mac",
+          "description": "Hardware (MAC) address",
+          "type": "string",
+          "required": true
+        }, {
+          "in": "formData",
+          "name": "nickname",
+          "description": "Nickname (display name)",
+          "type": "string",
+          "required": true
+        }, {
+          "in": "formData",
+          "name": "command",
+          "description": "UNIX shell command to run once",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "network_id",
+          "description": "Wifi network ID to associate with",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "network[ssid]",
+          "description": "Network SSID",
+          "type": "string",
+          "required": true
+        }],
+        "responses": {
+          "201": {
+            "description": "Create a device."
+          }
+        },
+        "tags": ["devices"],
+        "operationId": "postDevices"
+      }
+    },
+    "/devices/{id}/token": {
+      "get": {
+        "summary": "Get device access token.",
+        "description": "Get device access token.",
+        "produces": ["application/json"],
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "description": "Device id",
+          "type": "string",
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Get device access token."
+          }
+        },
+        "tags": ["devices"],
+        "operationId": "getDevicesIdToken"
+      }
+    },
+    "/devices/{id}": {
+      "get": {
+        "summary": "Get device details.",
+        "description": "Get device details.",
+        "produces": ["application/json"],
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "description": "Device id",
+          "type": "string",
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Get device details."
+          }
+        },
+        "tags": ["devices"],
+        "operationId": "getDevicesId"
+      },
+      "put": {
+        "summary": "Update device details.",
+        "description": "Update device details.",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
+        "parameters": [{
+          "in": "formData",
+          "name": "mac",
+          "description": "Hardware (MAC) address",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "nickname",
+          "description": "Nickname (display name)",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "network_id",
+          "description": "Wifi network ID to associate with",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "command",
+          "description": "UNIX shell command to run once",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "network[ssid]",
+          "description": "Network SSID",
+          "type": "string",
+          "required": true
+        }, {
+          "in": "path",
+          "name": "id",
+          "type": "integer",
+          "format": "int32",
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Update device details."
+          }
+        },
+        "tags": ["devices"],
+        "operationId": "putDevicesId"
+      },
+      "delete": {
+        "summary": "Delete a device.",
+        "description": "Delete a device.",
+        "produces": ["application/json"],
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "description": "Note id",
+          "type": "string",
+          "required": true
+        }],
+        "responses": {
+          "204": {
+            "description": "Delete a device."
+          }
+        },
+        "tags": ["devices"],
+        "operationId": "deleteDevicesId"
+      }
+    },
+    "/networks": {
+      "get": {
+        "summary": "List all networks.",
+        "description": "List all networks.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "List all networks."
+          }
+        },
+        "tags": ["networks"],
+        "operationId": "getNetworks"
+      },
+      "post": {
+        "summary": "Create a network.",
+        "description": "Create a network.",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
+        "parameters": [{
+          "in": "formData",
+          "name": "ssid",
+          "description": "Network SSID",
+          "type": "string",
+          "required": true
+        }, {
+          "in": "formData",
+          "name": "channel",
+          "description": "Wireless channel to listen on",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "quota",
+          "description": "Upload + download quota per session (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "bandwidth_up",
+          "description": "Maximum upload bandwidth (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "bandwidth_down",
+          "description": "Maximum download bandwidth (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "time_limit",
+          "description": "Time limit per visitor in seconds (default 3600)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "block_torrent",
+          "description": "Torrent block enabled/disabled (enabled by default)",
+          "type": "boolean",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "whitelisted_domains",
+          "description": "Comma-separated list of whitelisted domains (empty by default)",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "reauth_interval",
+          "description": "Reauth interval between user sessions (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "phone",
+          "description": "Network-specific phone number",
+          "type": "string",
+          "required": false
+        }],
+        "responses": {
+          "201": {
+            "description": "Create a network."
+          }
+        },
+        "tags": ["networks"],
+        "operationId": "postNetworks"
+      }
+    },
+    "/networks/{id}": {
+      "get": {
+        "summary": "Get network details.",
+        "description": "Get network details.",
+        "produces": ["application/json"],
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "description": "Network id",
+          "type": "string",
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Get network details."
+          }
+        },
+        "tags": ["networks"],
+        "operationId": "getNetworksId"
+      },
+      "put": {
+        "summary": "Update network details.",
+        "description": "Update network details.",
+        "produces": ["application/json"],
+        "consumes": ["application/json"],
+        "parameters": [{
+          "in": "formData",
+          "name": "ssid",
+          "description": "Network SSID",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "channel",
+          "description": "Wireless channel to listen on",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "quota",
+          "description": "Upload + download quota per session (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "bandwidth_up",
+          "description": "Maximum upload bandwidth (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "bandwidth_down",
+          "description": "Maximum download bandwidth (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "time_limit",
+          "description": "Time limit per visitor",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "block_torrent",
+          "description": "Torrent block enabled/disabled",
+          "type": "boolean",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "whitelisted_domains",
+          "description": "Comma-separated list of whitelisted domains",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "reauth_interval",
+          "description": "Reauth interval between user sessions (default is off)",
+          "type": "integer",
+          "format": "int32",
+          "required": false
+        }, {
+          "in": "formData",
+          "name": "phone",
+          "description": "Network-specific phone number",
+          "type": "string",
+          "required": false
+        }, {
+          "in": "path",
+          "name": "id",
+          "type": "integer",
+          "format": "int32",
+          "required": true
+        }],
+        "responses": {
+          "200": {
+            "description": "Update network details."
+          }
+        },
+        "tags": ["networks"],
+        "operationId": "putNetworksId"
+      },
+      "delete": {
+        "summary": "Delete a network.",
+        "description": "Delete a network.",
+        "produces": ["application/json"],
+        "parameters": [{
+          "in": "path",
+          "name": "id",
+          "description": "Network id",
+          "type": "string",
+          "required": true
+        }],
+        "responses": {
+          "204": {
+            "description": "Delete a network."
+          }
+        },
+        "tags": ["networks"],
+        "operationId": "deleteNetworksId"
+      }
+    }
+  }
+}
