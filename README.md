@@ -345,11 +345,215 @@ Now, if your service had a route ```GET http://service.supercompany.io/users```,
 
 Don't forget to set PRIVATE_KEY and PUBLIC_KEY environment variables, they are necessary for authentication to work.
 
+### Example 2: Multiple microservices with aggregate requests
+
+This time we are going to add two services behind our API gateway - one with Swagger 1 documentation and another
+with Swagger 2 documentation. Vrata detects Swagger version automatically, so we don't have to specify this
+anywhere. Let's first define **GATEWAY_SERVICES** environment variable:
+
+```json
+{
+	"core": [],
+	"service1": []
+}
+```
+
+So we have two services - "core" and "service1", Vrata will assume that DNS hostnames will match these.
+
+Let's define **GATEWAY_GLOBAL** variable now - this variable contains global settings of the API gateway:
+
+```json
+{
+	"prefix": "/v1",
+	"timeout": 10.0,
+	"doc_point": "/api/doc",
+	"domain": "live.vrata.io"
+}
+```
+
+All routes imported from Swagger will be prefixed with "/v1" because of the first setting. 10 seconds is the timeout
+we give our API gateway for internal requests to microservices behind it. "doc_point" is the URI of Swagger
+documentation, and "domain" is the DNS domain that will be added to every service name.
+
+Therefore, when Vrata tries to load Swagger documentation for "core" service, it will hit *http://core.live.vrata.io/api/doc* URL.
+If you have unique Swagger URIs per microservice - you can define "doc_point" for every service individually.
+
+Setting these two variables is enough to start working with Vrata - it will import all routes from "core" and "service1"
+and start proxying requests to them.
+
+However, if we need something more sophisticated - eg. an aggregated request that involves multiple
+microservices at the same time, we need to define a third environment variable - **GATEWAY_ROUTES**.
+
+Consider this example:
+
+```json
+[{
+	"aggregate": true,
+	"method": "GET",
+	"path": "/v1/connections/{id}",
+	"actions": {
+		"venue": {
+			"service": "core",
+			"method": "GET",
+			"path": "venues/{id}",
+			"sequence": 0,
+			"critical": true,
+			"output_key": "venue"
+		},
+		"connections": {
+			"service": "service1",
+			"method": "GET",
+			"path": "connections/{venue%data.id}",
+			"sequence": 1,
+			"critical": false,
+			"output_key": {
+				"data": "venue.clients"
+			}
+		},
+		"access-lists": {
+			"service": "service1",
+			"method": "GET",
+			"path": "/metadata/{venue%data.id}",
+			"sequence": 1,
+			"critical": false,
+			"output_key": {
+				"data": "venue.metadata"
+			}
+		}
+	}
+}, {
+	"method": "GET",
+	"path": "/v1/about",
+	"public": true,
+	"actions": [{
+		"service": "service1",
+		"method": "GET",
+		"path": "static/about",
+		"sequence": 0,
+		"critical": true
+	}]
+}, {
+	"method": "GET",
+	"path": "/v1/history",
+	"raw": true,
+	"actions": [{
+		"method": "GET",
+		"service": "core",
+		"path": "/connections/history"
+	}]
+}]
+```
+
+The config above defines 3 routes - two regular requests with custom settings and one aggregate request. Let's start
+with simple requests:
+
+```json
+{
+	"method": "GET",
+	"path": "/v1/about",
+	"public": true,
+	"actions": [{
+		"service": "service1",
+		"method": "GET",
+		"path": "static/about",
+		"sequence": 0,
+		"critical": true
+	}]
+}
+```
+
+This definition will add a "/v1/about" route to the API gateway that will be public - it won't require
+any access token at all, authentication will be bypassed. It will proxy request to http://service1.live.vrata.io/static/about and
+pass back whatever was returned.
+
+Another simple route:
+
+```json
+{
+	"method": "GET",
+	"path": "/v1/history",
+	"raw": true,
+	"actions": [{
+		"method": "GET",
+		"service": "core",
+		"path": "/connections/history"
+	}]
+}
+```
+
+This will add a "/v1/history" endpoint that will request data from http://core.live.vrata.io/connections/history.
+Notice the "raw" flag - this means Vrata won't do any JSON parsing at all (and therefore you won't be able to mutate
+output as result). This is important for performance - PHP may choke if you json_decode() and then json_encode() a huge string 
+- arrays and objects are very memory expensive in PHP.
+
+And finally our aggregate route:
+
+```json
+{
+	"aggregate": true,
+	"method": "GET",
+	"path": "/v1/connections/{id}",
+	"actions": {
+		"venue": {
+			"service": "core",
+			"method": "GET",
+			"path": "venues/{id}",
+			"sequence": 0,
+			"critical": true,
+			"output_key": "venue"
+		},
+		"connections": {
+			"service": "service1",
+			"method": "GET",
+			"path": "connections/{venue%data.id}",
+			"sequence": 1,
+			"critical": false,
+			"output_key": {
+				"data": "venue.clients"
+			}
+		},
+		"access-lists": {
+			"service": "service1",
+			"method": "GET",
+			"path": "/metadata/{venue%data.id}",
+			"sequence": 1,
+			"critical": false,
+			"output_key": {
+				"data": "venue.metadata"
+			}
+		}
+	}
+}
+```
+
+First property marks it as an aggregate route - that's self explanatory. The route will be mounted as
+"/v1/connections/{id}" where "id" will be any string or number. Then, this route involves 3 requests
+to microservices and two of them can be made in parallel - because they have the same sequence number of 1.
+
+Vrata will first make a request to http://core.live.vrata.io/venues/{id} where {id} is the parameter from request.
+This route action is marked as critical - therefore, if it fails the whole request is abandoned. 
+All output from this action will be presented in the final JSON output as "venue" property.
+
+Then, two requests will be launched simultaneously - to http://service1.live.vrata.io/connections/{id}
+and another to http://service1.live.vrata.io/metadata/{id}. This time, {id} is taken from the output of
+the previous action. Vrata will collect all outputs from all requests and make them available to all
+following requests. 
+
+Since these two requests always happen later than the first one (because of the sequence setting),
+they can have access to its output. Notice {venue%data.id} in the paths - this refers to "venue" (name
+of the previous action) and "id" property of "data" object ("data.id" in dot notation).
+
+Both actions are set to non-critical - if they fail, user will still receive a response, but corresponding
+fields will be empty.
+
+We only take "data" JSON property from both responses and we inject it to the final response as
+ "venue.clients" and "venue.metadata".
+
 ## License
 
 The MIT License (MIT)
 
-Copyright (c) 2017 PoweredLocal
+Copyright (c) 2017-2018 PoweredLocal
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
