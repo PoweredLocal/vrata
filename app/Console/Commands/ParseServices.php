@@ -113,9 +113,10 @@ class ParseServices extends Command
      */
     protected function parseSwaggerTwo(array $swagger)
     {
-        return collect($swagger['paths'])->map(function($data, $path) {
+        $basePath = array_key_exists('basePath', $swagger) ? $swagger['basePath'] : '/';
+        return collect($swagger['paths'])->map(function($data, $path) use ($basePath) {
             return [
-                'path' => $path,
+                'path' => str_replace('//', '/', $basePath.$path),
                 'description' => isset($data['description']) ? $data['description'] : '',
                 'swagger2-data' => $data
             ];
