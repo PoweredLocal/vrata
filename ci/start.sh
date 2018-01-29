@@ -31,6 +31,11 @@ if [ -n ${LOGGING_LOGENTRIES} -a -n ${LOGGING_ID} ]; then
   /root/logs-logentries.sh  
 fi
 
+# Install AppOptics if necessary
+if [ -n ${APPOPTICS_SERVICE_KEY} ]; then
+  /root/apm-appoptics.sh
+fi
+
 # Start up PHP FPM
 /bin/echo clear_env = no >> /etc/php/7.0/fpm/pool.d/www.conf
 /usr/sbin/php-fpm7.0

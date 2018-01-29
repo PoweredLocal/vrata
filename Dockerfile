@@ -23,6 +23,7 @@ ADD tests/ /home/app/tests
 ADD phpunit.xml /home/app/
 ADD ci/start.sh /
 ADD ci/logs-logentries.sh /root/
+ADD ci/apm-appoptics.sh /root/
 
 EXPOSE 80
 
