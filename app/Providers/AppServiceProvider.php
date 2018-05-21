@@ -80,7 +80,9 @@ class AppServiceProvider extends ServiceProvider
             '190.93.240.0/20',
             '197.234.240.0/22',
             '198.41.128.0/17',
-            '199.27.128.0/21'
+            '199.27.128.0/21',
+            '172.31.0.0/16', // Rancher
+            '10.42.0.0/16' // Rancher
         ]);
 
         return $request;
