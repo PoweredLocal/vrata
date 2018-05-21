@@ -7,7 +7,9 @@ if [ -n "$CHOWN_TO_USER" ]; then chown -R $CHOWN_TO_USER /home/app; fi
 rm -rf /home/app/storage/cache/*
 
 # Run migrations
-/usr/bin/php /home/app/artisan migrate
+if [ -z "$APP_ENV" -o "$APP_ENV" != 'production' ]; then
+  /usr/bin/php /home/app/artisan migrate
+fi
 
 # Import routes from services
 /usr/bin/php /home/app/artisan gateway:parse
