@@ -18,6 +18,9 @@ fi
 echo ${PRIVATE_KEY} > /home/app/storage/oauth-private.key
 echo ${PUBLIC_KEY} > /home/app/storage/oauth-public.key
 
+chmod 600 /home/app/storage/*.key
+if [ -n "$CHOWN_TO_USER" ]; then chown $CHOWN_TO_USER /home/app/storage/*.key; fi
+
 # Increase limits
 upload_max_filesize=20M
 post_max_size=20M
