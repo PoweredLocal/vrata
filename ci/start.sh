@@ -40,7 +40,7 @@ fi
 
 # Start up PHP FPM
 /bin/echo clear_env = no >> /etc/php/7.0/fpm/pool.d/www.conf
-#/bin/echo pm.max_children = 20 >> /etc/php/7.0/fpm/pool.d/www.conf
+/bin/echo pm.max_children = 25 >> /etc/php/7.0/fpm/pool.d/www.conf
 /usr/sbin/php-fpm7.0
 #this one doesn't expose env variables
 #/usr/sbin/service php7.0-fpm start
