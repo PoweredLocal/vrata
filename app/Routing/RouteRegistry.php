@@ -71,7 +71,7 @@ class RouteRegistry
             $middleware = [ 'helper:' . $route->getId() ];
             if (! $route->isPublic()) $middleware[] = 'auth';
 
-            $app->{$method}($route->getPath(), [
+            $app->router->{$method}($route->getPath(), [
                 'uses' => 'App\Http\Controllers\GatewayController@' . $method,
                 'middleware' => $middleware
             ]);

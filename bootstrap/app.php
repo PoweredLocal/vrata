@@ -116,7 +116,7 @@ if ($app->environment() != 'testing') {
 |
 */
 
-$app->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['auth']], function ($app) {
+$app->router->group(['namespace' => 'App\Http\Controllers', 'middleware' => ['auth']], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
 });
 
