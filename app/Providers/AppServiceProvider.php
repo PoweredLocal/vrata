@@ -83,7 +83,7 @@ class AppServiceProvider extends ServiceProvider
             '199.27.128.0/21',
             '172.31.0.0/16', // Rancher
             '10.42.0.0/16' // Rancher
-        ]);
+        ], \Illuminate\Http\Request::HEADER_X_FORWARDED_ALL);
 
         return $request;
     }
