@@ -56,7 +56,7 @@ class TestCase extends Laravel\Lumen\Testing\TestCase
             return $this->app->currentRoute;
         })->setTrustedProxies([
             '10.7.0.0/16'
-        ]);
+        ], Request::HEADER_X_FORWARDED_ALL);
 
         return $request;
     }
