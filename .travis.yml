@@ -8,7 +8,7 @@ cache:
     - $HOME/.composer/cache
 
 php:
-  - '7.0'
+  - '7.1'
 
 install:
   - composer install --dev
