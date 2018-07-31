@@ -28,12 +28,12 @@ memory_limit=256M
 
 for key in upload_max_filesize post_max_size memory_limit
 do
- sed -i "s/^\($key\).*/\1 = $(eval echo \${$key})/" /etc/php/7.0/fpm/php.ini
+ sed -i "s/^\($key\).*/\1 = $(eval echo \${$key})/" /etc/php/7.2/fpm/php.ini
 done
 
 # Start logging daemons if necessary
-if [ -n ${LOGGING_LOGENTRIES} -a -n ${LOGGING_ID} ]; then 
-  /root/logs-logentries.sh  
+if [ -n "${LOGGING_LOGENTRIES}" -a -n "${LOGGING_ID}" ]; then
+  /root/logs-logentries.sh
 fi
 
 # Install AppOptics if necessary
@@ -42,9 +42,9 @@ fi
 #fi
 
 # Start up PHP FPM
-/bin/echo clear_env = no >> /etc/php/7.0/fpm/pool.d/www.conf
+/bin/echo clear_env = no >> /etc/php/7.2/fpm/pool.d/www.conf
 #/bin/echo pm.max_children = 25 >> /etc/php/7.0/fpm/pool.d/www.conf
-/usr/sbin/php-fpm7.0
+/usr/sbin/php-fpm7.2
 #this one doesn't expose env variables
 #/usr/sbin/service php7.0-fpm start
 
