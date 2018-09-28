@@ -22,8 +22,8 @@ Introductory blog post [in English](https://medium.com/@poweredlocal/developing-
 
 ## Requirements and dependencies
 
-- PHP >= 7.0
-- Lumen 5.3
+- PHP >= 7.1.3
+- Lumen 5.6
 - Guzzle 6
 - Laravel Passport (with [Lumen Passport](https://github.com/dusterio/lumen-passport))
 - Memcached (for request throttling)
