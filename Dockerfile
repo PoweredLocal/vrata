@@ -3,7 +3,7 @@ FROM dusterio/ubuntu-php7.2:latest
 # Install memcached & xdebug extensions
 # The latter is only necessary for test coverage, it will be disabled later on
 RUN apt-get -y update
-RUN apt-get -y -o DPkg::Options::="--force-confold" install php-memcached php-xdebug php-sqlite3
+RUN apt-get -y -o DPkg::Options::="--force-confold" install php-memcached php-xdebug php-sqlite3 php-pgsql
 
 # All files will be chowned later
 ENV CHOWN_TO_USER=www-data
