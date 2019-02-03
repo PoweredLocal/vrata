@@ -165,4 +165,23 @@ class Action implements ActionContract
     {
         return $this->config['output_key'] ?? null;
     }
+
+    /**
+     * @return array
+     */
+    public function getPostData()
+    {
+        return $this->config['post_data'] ?? null;
+    }
+
+    /**
+     * @param $post_data
+     * @return $this
+     */
+    public function setPostData($post_data)
+    {
+        $this->config['post_data'] = $post_data;
+
+        return $this;
+    }
 }

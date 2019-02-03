@@ -71,4 +71,15 @@ interface ActionContract
      * @return string
      */
     public function getOutputKey();
+
+    /**
+     * @return array
+     */
+    public function getPostData();
+
+    /**
+     * @param string $post_data
+     * @return $this
+     */
+    public function setPostData($post_data);
 }

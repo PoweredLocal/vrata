@@ -45,6 +45,7 @@ class RestBatchResponse
      */
     public function addFailedAction($alias, Response $response)
     {
+       
         $this->addAction($alias, (string)$response->getBody(), $response->getStatusCode());
         $this->failures++;
     }
