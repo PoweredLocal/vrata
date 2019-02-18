@@ -75,11 +75,11 @@ interface ActionContract
     /**
      * @return array
      */
-    public function getPostData();
+    public function getBodyAsync();
 
     /**
-     * @param string $post_data
+     * @param string $body
      * @return $this
      */
-    public function setPostData($post_data);
+    public function setBodyAsync($body);
 }

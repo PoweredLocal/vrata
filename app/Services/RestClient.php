@@ -207,12 +207,12 @@ class RestClient
         $promises = $batch->reduce(function($carry, $action) use ($parametersJar) {
             $method = strtolower($action->getMethod());
             $url = $this->buildUrl($action, $parametersJar);
-            // Le problème doit être le json body
-            //$this->client->setBody($request->getContent());
-            $postData = $action->getPostData();
 
-            if (!is_null($postData)) {
-                $this->setBody(json_encode($this->injectBodyParams($postData, $parametersJar)));
+            // Get body parameters for the current request
+            $bodyAsync = $action->getBodyAsync();
+
+            if (!is_null($bodyAsync)) {
+                $this->setBody(json_encode($this->injectBodyParams($bodyAsync, $parametersJar)));
             }
             
             $carry[$action->getAlias()] = $this->client->{$method . 'Async'}($url, $this->guzzleParams);

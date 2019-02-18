@@ -169,18 +169,18 @@ class Action implements ActionContract
     /**
      * @return array
      */
-    public function getPostData()
+    public function getBodyAsync()
     {
-        return $this->config['post_data'] ?? null;
+        return $this->config['body'] ?? null;
     }
 
     /**
-     * @param $post_data
+     * @param $body
      * @return $this
      */
-    public function setPostData($post_data)
+    public function setBodyAsync($body)
     {
-        $this->config['post_data'] = $post_data;
+        $this->config['body'] = $body;
 
         return $this;
     }
