@@ -30,7 +30,7 @@ Introductory blog post [in English](https://medium.com/@poweredlocal/developing-
 
 ## Running as a Docker container
 
-Ideally, you want to run this as a stateless Docker container configured entirely by environment variables. Therefore, you don't even need to deploy 
+Ideally, you want to run this as a stateless Docker container configured entirely by environment variables. Therefore, you don't even need to deploy
 this code anywhere yourself - just use our [public Docker Hub image](https://hub.docker.com/r/pwred/vrata).
 
 Deploying it is as easy as:
@@ -66,7 +66,7 @@ See Laravel/Lumen documentation for the list of supported databases.
 
 #### APP_KEY
 
-Lumen application key 
+Lumen application key
 
 ### Gateway variables
 
@@ -111,9 +111,13 @@ JSON array of extra routes including any aggregate routes
 
 JSON object with global settings
 
+#### X_HEADER_WHITELIST
+
+JSON object with custom headers that will be forwarded to the microservices
+
 ### Logging
 
-Currently only LogEntries is supported out of the box. To send nginx and Lumen logs to LE, simply set two 
+Currently only LogEntries is supported out of the box. To send nginx and Lumen logs to LE, simply set two
 environmetn variables:
 
 #### LOGGING_ID
@@ -128,11 +132,11 @@ Your user key with LogEntries
 
 - Built-in OAuth2 server to handle authentication for all incoming requests
 - Aggregate queries (combine output from 2+ APIs)
-- Output restructuring 
+- Output restructuring
 - Aggregate Swagger documentation (combine Swagger docs from underlying services) *
 - Automatic mount of routes based on Swagger JSON
-- Sync and async outgoing requests 
-- DNS service discovery 
+- Sync and async outgoing requests
+- DNS service discovery
 
 ## Installation
 
@@ -201,11 +205,11 @@ This endpoint may be auto-imported to API gateway during container start (or whe
 Assuming this microservice is listed in *GATEWAY_SERVICES*, we can now run auto-import:
 
 ```bash
-$ php artisan gateway:parse                                                                                                                                              
-** Parsing service1                                                                                                                                                         
-Processing API action: http://localhost:8000/uploads                                                                                                                
-Dumping route data to JSON file                                                                                                                                          
-Finished!                                                                       
+$ php artisan gateway:parse
+** Parsing service1
+Processing API action: http://localhost:8000/uploads
+Dumping route data to JSON file
+Finished!
 ```
 
 That's it - Vrata will now "proxy" all requests for `/uploads` to this microservice.
@@ -229,7 +233,7 @@ this Id or on token scopes (see below).
 
 Token scopes extracted from the JSON web token. Comma separated (eg. ```read,write```)
 
-Your microservice may use these for authorization purposes (restrict certain actions, etc). 
+Your microservice may use these for authorization purposes (restrict certain actions, etc).
 
 *X-Client-Ip*
 
@@ -248,7 +252,7 @@ You can do basic JSON output mutation using ```output``` property of an action. 
 ];
 ```
 
-Response from *service1* will be included in the final output under *data* key. 
+Response from *service1* will be included in the final output under *data* key.
 
 ```output_key``` can be an array to allow further mutation:
 ```php
@@ -297,7 +301,7 @@ $ time curl http://gateway.local/devices/5/details
 real    0m0.056s
 ```
 
-And it's just 56ms for all 3 requests! Second and third requests were executed in parallel (in async mode). 
+And it's just 56ms for all 3 requests! Second and third requests were executed in parallel (in async mode).
 
 This is pretty decent, we think!
 
@@ -483,7 +487,7 @@ Another simple route:
 
 This will add a "/v1/history" endpoint that will request data from http://core.live.vrata.io/connections/history.
 Notice the "raw" flag - this means Vrata won't do any JSON parsing at all (and therefore you won't be able to mutate
-output as result). This is important for performance - PHP may choke if you json_decode() and then json_encode() a huge string 
+output as result). This is important for performance - PHP may choke if you json_decode() and then json_encode() a huge string
 - arrays and objects are very memory expensive in PHP.
 
 And finally our aggregate route:
@@ -531,13 +535,13 @@ First property marks it as an aggregate route - that's self explanatory. The rou
 to microservices and two of them can be made in parallel - because they have the same sequence number of 1.
 
 Vrata will first make a request to http://core.live.vrata.io/venues/{id} where {id} is the parameter from request.
-This route action is marked as critical - therefore, if it fails the whole request is abandoned. 
+This route action is marked as critical - therefore, if it fails the whole request is abandoned.
 All output from this action will be presented in the final JSON output as "venue" property.
 
 Then, two requests will be launched simultaneously - to http://service1.live.vrata.io/connections/{id}
 and another to http://service1.live.vrata.io/metadata/{id}. This time, {id} is taken from the output of
 the previous action. Vrata will collect all outputs from all requests and make them available to all
-following requests. 
+following requests.
 
 Since these two requests always happen later than the first one (because of the sequence setting),
 they can have access to its output. Notice {venue%data.id} in the paths - this refers to "venue" (name
