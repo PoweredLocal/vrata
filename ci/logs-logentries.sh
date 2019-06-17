@@ -1,5 +1,7 @@
 #!/bin/bash
 
+apt-get -y install gpg
+
 echo 'deb http://rep.logentries.com/ trusty main' > /etc/apt/sources.list.d/logentries.list
 gpg --keyserver pgp.mit.edu --recv-keys C43C79AD && gpg -a --export C43C79AD | apt-key add -
 apt-get -y update
