@@ -19,8 +19,8 @@ install:
 
 script:
   - docker exec app /bin/sh -c "cd /home/app; cat /dev/null >> database/gateway.sqlite; export APP_ENV=testing; export DB_DATABASE=database/gateway.sqlite; php artisan migrate --database=sqlite"
-  - docker exec app /bin/sh -c "cd /home/app; touch storage/logs/laravel.log; export APP_ENV=testing; export APP_DEBUG=true; php artisan passport:keys; ./vendor/bin/phpunit"
-  - docker exec app /bin/sh -c "cd /home/app; phpdismod xdebug; ls -l storage/logs/laravel.log; cat storage/logs/laravel.log"
+  - docker exec app /bin/sh -c "cd /home/app; touch storage/logs/lumen.log; export APP_ENV=testing; export APP_DEBUG=true; php artisan passport:keys; ./vendor/bin/phpunit"
+  - docker exec app /bin/sh -c "cd /home/app; phpdismod xdebug; ls -l storage/logs/lumen.log; cat storage/logs/lumen.log"
   - docker cp app:/home/app/build/logs/clover.xml ./build/logs/clover.xml
   - ./vendor/bin/test-reporter
 
