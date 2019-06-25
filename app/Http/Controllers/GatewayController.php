@@ -64,7 +64,8 @@ class GatewayController extends Controller
     public function get(Request $request, RestClient $client)
     {
         if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
-        else return $this->aggregateRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -114,7 +115,8 @@ class GatewayController extends Controller
     public function delete(Request $request, RestClient $client)
     {
         if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
-        else return $this->aggregateRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -125,7 +127,8 @@ class GatewayController extends Controller
     public function post(Request $request, RestClient $client)
     {
         if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
-        else return $this->aggregateRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -136,7 +139,8 @@ class GatewayController extends Controller
     public function put(Request $request, RestClient $client)
     {
         if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
-        else return $this->aggregateRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
