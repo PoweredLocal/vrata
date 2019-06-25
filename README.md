@@ -549,6 +549,61 @@ fields will be empty.
 We only take "data" JSON property from both responses and we inject it to the final response as
  "venue.clients" and "venue.metadata".
 
+### Example 3: Multiple microservices with aggregate POST / PUT / DELETE requests
+
+Initial body of your POST, PUT or DELETE request come with origin tag usable in your json. You can use in your actions an optionnal body parameters for each requests. You can use origin tag to use the body sent in your initial request. You can also use the response of each actions in the body param like in a GET aggregate request. 
+
+```json
+{
+	"aggregate": true,
+	"method": "PUT",
+	"path": "/v1/unregister/sendaccess",
+	"actions": {	
+	  "contact": {
+		"service": "contact",
+		"method": "PUT",
+		"path": "unregister/newsletter",
+		"sequence": 0,
+		"critical": true,
+		"body": {
+			"email": "{origin%email}"
+		},
+		"output_key": "register"
+	  },
+	  "template": {
+		"service": "notice",
+		"method": "POST",
+		"path": "notice/email/generate",
+		"sequence": 1,
+		"critical": true,
+		"body": {
+			"validationToken": "{contact%validationToken}",
+			"noticeTypeId": "{contact%validationType}"
+		},
+		"output_key": "notice"
+	  },
+	  "check": {
+		"service": "email",
+		"method": "POST",
+		"path": "email/send",
+		"sequence": 2,
+		"critical": true,
+		"body": {
+			"to": "{origin%email}",
+			"sujet": "Email object",
+			"queue_name": "urgent",
+			"message_html": "{template%htmlTemplate}",
+			"message_text": "text version",
+			"from": "support@example.org",
+			"nom": "Sender name"
+		},
+		"output_key": "result"
+	  }
+	}
+}
+```
+
+
 ## License
 
 The MIT License (MIT)
