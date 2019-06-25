@@ -38,10 +38,11 @@ class Request extends \Illuminate\Http\Request
      * Get the route handling the request.
      *
      * @param string|null $param
+     * @param string $default
      *
      * @return \Illuminate\Routing\Route|object|string
      */
-    public function route($param = null)
+    public function route($param = null, $default = null)
     {
         $route = call_user_func($this->getRouteResolver());
 
