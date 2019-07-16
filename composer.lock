@@ -639,16 +639,16 @@
         },
         {
             "name": "dusterio/lumen-passport",
-            "version": "0.2.12",
+            "version": "0.2.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dusterio/lumen-passport.git",
-                "reference": "aa624702e1d48a78c3014ca5a102d999db34275c"
+                "reference": "90d47a0a85924f09b0d1ace7e48e8229a6494cf7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dusterio/lumen-passport/zipball/aa624702e1d48a78c3014ca5a102d999db34275c",
-                "reference": "aa624702e1d48a78c3014ca5a102d999db34275c",
+                "url": "https://api.github.com/repos/dusterio/lumen-passport/zipball/90d47a0a85924f09b0d1ace7e48e8229a6494cf7",
+                "reference": "90d47a0a85924f09b0d1ace7e48e8229a6494cf7",
                 "shasum": ""
             },
             "require": {
@@ -689,7 +689,7 @@
                 "lumen",
                 "php"
             ],
-            "time": "2019-07-16T07:24:56+00:00"
+            "time": "2019-07-16T07:45:43+00:00"
         },
         {
             "name": "egulias/email-validator",
