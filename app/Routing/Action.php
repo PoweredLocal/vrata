@@ -165,4 +165,23 @@ class Action implements ActionContract
     {
         return $this->config['output_key'] ?? null;
     }
+
+    /**
+     * @return array
+     */
+    public function getBodyAsync()
+    {
+        return $this->config['body'] ?? null;
+    }
+
+    /**
+     * @param $body
+     * @return $this
+     */
+    public function setBodyAsync($body)
+    {
+        $this->config['body'] = $body;
+
+        return $this;
+    }
 }

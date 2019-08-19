@@ -71,4 +71,15 @@ interface ActionContract
      * @return string
      */
     public function getOutputKey();
+
+    /**
+     * @return array
+     */
+    public function getBodyAsync();
+
+    /**
+     * @param string $body
+     * @return $this
+     */
+    public function setBodyAsync($body);
 }

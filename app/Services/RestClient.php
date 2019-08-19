@@ -122,6 +122,19 @@ class RestClient
     }
 
     /**
+     * @param string $body
+     * @return $output
+     */
+    public function setAggregateOriginBody($body)
+    {
+        foreach (json_decode($body) as $key => $value) {
+            $output['origin%' . $key] = $value;
+         }
+
+        return $output;
+    }
+
+    /**
      * @param array $files
      * @return $this
      */
@@ -191,11 +204,19 @@ class RestClient
     {
         $wrapper = new RestBatchResponse();
         $wrapper->setCritical($batch->filter(function($action) { return $action->isCritical(); })->count());
-
         $promises = $batch->reduce(function($carry, $action) use ($parametersJar) {
             $method = strtolower($action->getMethod());
             $url = $this->buildUrl($action, $parametersJar);
+
+            // Get body parameters for the current request
+            $bodyAsync = $action->getBodyAsync();
+
+            if (!is_null($bodyAsync)) {
+                $this->setBody(json_encode($this->injectBodyParams($bodyAsync, $parametersJar)));
+            }
+            
             $carry[$action->getAlias()] = $this->client->{$method . 'Async'}($url, $this->guzzleParams);
+            
             return $carry;
         }, []);
 
@@ -212,10 +233,12 @@ class RestClient
      */
     private function processResponses(RestBatchResponse $wrapper, Collection $responses)
     {
+
         // Process successful responses
         $responses->filter(function ($response) {
             return $response['state'] == 'fulfilled';
         })->each(function ($response, $alias) use ($wrapper) {
+
             $wrapper->addSuccessfulAction($alias, $response['value']);
         });
 
@@ -224,6 +247,7 @@ class RestClient
             return $response['state'] != 'fulfilled';
         })->each(function ($response, $alias) use ($wrapper) {
             $response = $response['reason']->getResponse();
+           
             if ($wrapper->hasCriticalActions()) throw new UnableToExecuteRequestException($response);
 
             // Do we have an error response from the service?
@@ -277,6 +301,28 @@ class RestClient
     }
 
     /**
+     * @param array $body
+     * @param array $params
+     * @param string $prefix
+     * @return array
+     */
+    private function injectBodyParams(array $body, array $params, $prefix = '')
+    {
+        foreach ($params as $key => $value) {
+            foreach ($body as $bodyParam => $bodyValue) {
+                if (is_string($value) || is_numeric($value)) {
+                    $body[$bodyParam] = str_replace("{" . $prefix . $key . "}", $value, $bodyValue);
+                } else if (is_array($value)) {
+                    if ($bodyValue == "{" . $prefix . $key . "}") {
+                        $body[$bodyParam] = $value;
+                    }
+                }
+            }
+        }
+        return $body;
+    }    
+
+    /**
      * @param ActionContract $action
      * @param $parametersJar
      * @return string
@@ -289,4 +335,5 @@ class RestClient
 
         return $this->services->resolveInstance($action->getService()) . $url;
     }
+
 }
