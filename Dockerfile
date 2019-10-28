@@ -1,4 +1,4 @@
-FROM dusterio/ubuntu-php7.2:latest
+FROM pwred/ubuntu-php7.2
 
 # Install memcached & xdebug extensions
 # The latter is only necessary for test coverage, it will be disabled later on

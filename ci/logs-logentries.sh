@@ -1,9 +1,11 @@
 #!/bin/bash
 
-echo 'deb http://rep.logentries.com/ trusty main' > /etc/apt/sources.list.d/logentries.list
-gpg --keyserver pgp.mit.edu --recv-keys C43C79AD && gpg -a --export C43C79AD | apt-key add -
+apt-get -y install gpg
+
+echo 'deb http://rep.logentries.com/ bionic main' > /etc/apt/sources.list.d/logentries.list
+gpg --keyserver pgp.mit.edu --recv-keys A5270289C43C79AD && gpg -a --export A5270289C43C79AD | apt-key add -
 apt-get -y update
-apt-get -y install logentries
+apt-get -y install python-setproctitle logentries
 le reinit --user-key=${LOGGING_LOGENTRIES} --pull-server-side-config=False
 
 cat >> /etc/le/config << EOF
@@ -17,4 +19,5 @@ destination = ${LOGGING_ID}/app
 EOF
 
 apt-get -y install logentries-daemon
+le register
 service logentries start

@@ -64,17 +64,8 @@ class GatewayController extends Controller
     public function get(Request $request, RestClient $client)
     {
         if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
-
-        $parametersJar = array_merge($request->getRouteParams(), ['query_string' => $request->getQueryString()]);
-
-        $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
-            $responses = $client->asyncRequest($batch, $parametersJar);
-            $parametersJar = array_merge($parametersJar, $responses->exportParameters());
-
-            return array_merge($carry, $responses->getResponses()->toArray());
-        }, []);
-
-        return $this->presenter->format($this->rearrangeKeys($output), 200);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -123,7 +114,9 @@ class GatewayController extends Controller
      */
     public function delete(Request $request, RestClient $client)
     {
-        return $this->simpleRequest($request, $client);
+        if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -133,7 +126,9 @@ class GatewayController extends Controller
      */
     public function post(Request $request, RestClient $client)
     {
-        return $this->simpleRequest($request, $client);
+        if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -143,7 +138,9 @@ class GatewayController extends Controller
      */
     public function put(Request $request, RestClient $client)
     {
-        return $this->simpleRequest($request, $client);
+        if (! $request->getRoute()->isAggregate()) return $this->simpleRequest($request, $client);
+        
+        return $this->aggregateRequest($request, $client);
     }
 
     /**
@@ -157,14 +154,41 @@ class GatewayController extends Controller
         if ($request->getRoute()->isAggregate()) throw new NotImplementedException('Aggregate ' . strtoupper($request->method()) . 's are not implemented yet');
 
         $client->setBody($request->getContent());
-
+  
         if (count($request->allFiles()) !== 0) {
             $client->setFiles($request->allFiles());
         }
 
         $parametersJar = array_merge($request->getRouteParams(), ['query_string' => $request->getQueryString()]);
+
         $response = $client->syncRequest($this->actions->first()->first(), $parametersJar);
 
         return $this->presenter->format((string)$response->getBody(), $response->getStatusCode());
+    }
+
+    /**
+     * @param Request $request
+     * @param RestClient $client
+     * @return Response
+     */
+    private function aggregateRequest(Request $request, RestClient $client) {
+
+        // Aggregate request
+        $parametersJar = array_merge($request->getRouteParams(), ['query_string' => $request->getQueryString()]);
+    
+        // Initial Body
+        if ($request->getContent() != "") {
+            $parametersJar = array_merge($parametersJar, $client->setAggregateOriginBody($request->getContent()));
+        }
+
+        $output = $this->actions->reduce(function($carry, $batch) use (&$parametersJar, $client) {
+            $responses = $client->asyncRequest($batch, $parametersJar);
+           
+            $parametersJar = array_merge($parametersJar, $responses->exportParameters());
+
+            return array_merge($carry, $responses->getResponses()->toArray());
+        }, []);
+
+        return $this->presenter->format($this->rearrangeKeys($output), 200);
     }
 }
