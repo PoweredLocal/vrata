@@ -555,14 +555,14 @@ We only take "data" JSON property from both responses and we inject it to the fi
 
 ### Example 3: Multiple microservices with aggregate POST / PUT / DELETE requests
 
-Initial body of your POST, PUT or DELETE request come with origin tag usable in your json. You can use in your actions an optionnal body parameters for each requests. You can use origin tag to use the body sent in your initial request. You can also use the response of each actions in the body param like in a GET aggregate request. 
+Initial body of your POST, PUT or DELETE request come with origin tag usable in your json. You can use in your actions an optionnal body parameters for each requests. You can use origin tag to use the body sent in your initial request. You can also use the response of each actions in the body param like in a GET aggregate request.
 
 ```json
 {
 	"aggregate": true,
 	"method": "PUT",
 	"path": "/v1/unregister/sendaccess",
-	"actions": {	
+	"actions": {
 	  "contact": {
 		"service": "contact",
 		"method": "PUT",

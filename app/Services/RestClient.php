@@ -60,16 +60,26 @@ class RestClient
      */
     private function injectHeaders(Request $request)
     {
-        $this->setHeaders(
-            [
-                'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
-                'X-Token-Scopes' => $request->user() && ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
-                'X-Client-Ip' => $request->getClientIp(),
-                'User-Agent' => $request->header('User-Agent'),
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
-            ]
-        );
+        $headers = [
+            'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
+            'X-Token-Scopes' => $request->user() && ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
+            'X-Client-Ip' => $request->getClientIp(),
+            'User-Agent' => $request->header('User-Agent'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ];
+
+        // Check if there are whitelisted custom headers
+        $whiteList = env('X_HEADER_WHITELIST', '');
+        if ($whiteList != '') {
+            foreach ($whiteList as $key) {
+                if ($request->headers->has($key)) {
+                    $headers[$key] = $request->headers->get($key);
+                }
+            }
+        }
+
+        $this->setHeaders($headers);
     }
 
     /**
