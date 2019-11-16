@@ -71,7 +71,10 @@ class RestClient
 
         // Check if there are whitelisted custom headers
         $whiteList = env('X_HEADER_WHITELIST', '');
+
         if ($whiteList != '') {
+            $whiteList = json_decode($whiteList);
+
             foreach ($whiteList as $key) {
                 if ($request->headers->has($key)) {
                     $headers[$key] = $request->headers->get($key);
