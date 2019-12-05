@@ -17,7 +17,7 @@ class JSONPresenter implements PresenterContract
      */
     public static function safeDecode($input) {
         // Fix for PHP's issue with empty objects
-        $input = preg_replace('/{\s*}/', "{\"EMPTY_OBJECT\":true}", $input);
+        //$input = preg_replace('/{\s*}/', "{\"EMPTY_OBJECT\":true}", $input);
 
         return json_decode($input, true);
     }
@@ -65,6 +65,7 @@ class JSONPresenter implements PresenterContract
      */
     private function formatArray($input)
     {
+        return self::safeEncode($input);
         $output = [];
 
         if (is_array($input) && isset($input['error']) && is_string($input['error'])) {

@@ -168,10 +168,24 @@ class ParseServices extends Command
             $route['path'] = reset($pathElements);
 
             foreach ($route['operations'] as $realOperation) {
+
+                // Raw file exceptions
+                $raw = false;
+                if (strpos($route['path'], '/v1/files/downloads') !== FALSE) {
+                    $raw = true;
+                } elseif (strpos($route['path'], '/v1/pubfiles') !== FALSE) {
+                    $raw = true;
+                } elseif ($realOperation['method'] == 'POST' && ($route['path'] == '/v1/files')) {
+                    $raw = true;
+                } elseif (strpos($route['path'], '/v1/wbt') !== FALSE) {
+                    $raw = true;
+                }
+
                 $carry[] = [
                     'id' => (string)Uuid::generate(4),
                     'method' => $realOperation['method'],
                     'path' => $this->config['global']['prefix'] . $route['path'],
+                    'raw' => $raw,
                     'actions' => [[
                         'method' => $realOperation['method'],
                         'service' => $route['service'],
