@@ -9,9 +9,6 @@ apt-get -y install python-setproctitle logentries
 le reinit --user-key=${LOGGING_LOGENTRIES} --pull-server-side-config=False
 
 cat >> /etc/le/config << EOF
-[Main]
-pull-server-side-config=False
-
 [nginx]                                                                                                                                                                  
 path = /var/log/nginx/access.log                                                                                                                                         
 destination = ${LOGGING_ID}/nginx                                                                                                                                          
@@ -22,5 +19,4 @@ destination = ${LOGGING_ID}/app
 EOF
 
 apt-get -y install logentries-daemon
-le register 
 service logentries start
