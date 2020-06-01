@@ -60,16 +60,29 @@ class RestClient
      */
     private function injectHeaders(Request $request)
     {
-        $this->setHeaders(
-            [
-                'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
-                'X-Token-Scopes' => $request->user() && ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
-                'X-Client-Ip' => $request->getClientIp(),
-                'User-Agent' => $request->header('User-Agent'),
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
-            ]
-        );
+        $headers = [
+            'X-User' => $request->user()->id ?? self::USER_ID_ANONYMOUS,
+            'X-Token-Scopes' => $request->user() && ! empty($request->user()->token()) ? implode(',', $request->user()->token()->scopes) : '',
+            'X-Client-Ip' => $request->getClientIp(),
+            'User-Agent' => $request->header('User-Agent'),
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ];
+
+        // Check if there are whitelisted custom headers
+        $whiteList = env('X_HEADER_WHITELIST', '');
+
+        if ($whiteList != '') {
+            $whiteList = json_decode($whiteList);
+
+            foreach ($whiteList as $key) {
+                if ($request->headers->has($key)) {
+                    $headers[$key] = $request->headers->get($key);
+                }
+            }
+        }
+
+        $this->setHeaders($headers);
     }
 
     /**
@@ -214,9 +227,9 @@ class RestClient
             if (!is_null($bodyAsync)) {
                 $this->setBody(json_encode($this->injectBodyParams($bodyAsync, $parametersJar)));
             }
-            
+
             $carry[$action->getAlias()] = $this->client->{$method . 'Async'}($url, $this->guzzleParams);
-            
+
             return $carry;
         }, []);
 
@@ -247,7 +260,7 @@ class RestClient
             return $response['state'] != 'fulfilled';
         })->each(function ($response, $alias) use ($wrapper) {
             $response = $response['reason']->getResponse();
-           
+
             if ($wrapper->hasCriticalActions()) throw new UnableToExecuteRequestException($response);
 
             // Do we have an error response from the service?
@@ -320,7 +333,7 @@ class RestClient
             }
         }
         return $body;
-    }    
+    }
 
     /**
      * @param ActionContract $action
