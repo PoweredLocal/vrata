@@ -113,7 +113,6 @@ class RoutingTest extends TestCase {
         $this->get('/v1/somewhere/super-page/details', [
             'Authorization' => 'Bearer ' . $this->getUser()
         ]);
-
         $this->assertEquals(200, $this->response->getStatusCode());
         $this->assertEquals(3, count($this->history));
 

@@ -53,7 +53,7 @@ class AuthTest extends TestCase
         ]);
 
         $token = json_decode($this->response->getContent(), true);
-        $this->assertEquals(401, $this->response->getStatusCode());
+        $this->assertEquals(400, $this->response->getStatusCode());
         $this->assertEquals(true, ! empty($token['error']));
     }
 
