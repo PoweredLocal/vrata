@@ -5,3 +5,8 @@
 storage/oauth-private.key
 storage/oauth-public.key
 .DS_Store
+.phpunit.result.cache
+private.key
+public.key
+database/gateway.sqlite
+build/logs/clover.xml

@@ -74,7 +74,7 @@ $app->routeMiddleware([
 ]);
 
 $app->middleware([
-    \Barryvdh\Cors\HandleCors::class,
+    \Fruitcake\Cors\HandleCors::class,
     \App\Http\Middleware\Throttle::class
 //    \App\Http\Middleware\AddCORSHeader::class
 ]);
@@ -93,7 +93,7 @@ $app->middleware([
 $app->register(Appzcoder\LumenRoutesList\RoutesCommandServiceProvider::class);
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
-$app->register(\Barryvdh\Cors\LumenServiceProvider::class);
+$app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 
 if ($app->environment() != 'testing') {

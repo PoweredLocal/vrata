@@ -8,6 +8,7 @@ use App\Presenters\PresenterContract;
 use App\Services\RestClient;
 use App\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Arr;
 use Laravel\Lumen\Routing\Controller;
 
 class GatewayController extends Controller
@@ -86,18 +87,18 @@ class GatewayController extends Controller
             }
 
             if (is_string($key)) {
-                array_set($carry, $key, $data);
+                Arr::set($carry, $key, $data);
             }
 
             if (is_array($key)) {
                 collect($key)->each(function($outputKey, $property) use (&$data, &$carry, $key) {
                     if ($property == '*') {
-                        array_set($carry, $outputKey, $data);
+                        Arr::set($carry, $outputKey, $data);
                         return;
                     }
 
                     if (isset($data[$property])) {
-                        array_set($carry, $outputKey, $data[$property]);
+                        Arr::set($carry, $outputKey, $data[$property]);
                         unset($data[$property]);
                     }
                 });

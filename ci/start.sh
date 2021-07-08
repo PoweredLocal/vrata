@@ -42,9 +42,9 @@ fi
 #fi
 
 # Start up PHP FPM
-/bin/echo clear_env = no >> /etc/php/7.2/fpm/pool.d/www.conf
+/bin/echo clear_env = no >> /etc/php/8.0/fpm/pool.d/www.conf
 #/bin/echo pm.max_children = 25 >> /etc/php/7.0/fpm/pool.d/www.conf
-/etc/init.d/php7.2-fpm start
+/etc/init.d/php80-fpm start
 #this one doesn't expose env variables
 #/usr/sbin/service php7.0-fpm start
 

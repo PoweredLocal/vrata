@@ -1,4 +1,4 @@
-FROM pwred/ubuntu-php7.2
+FROM wyveo/nginx-php-fpm:php80
 
 # Install memcached & xdebug extensions
 # The latter is only necessary for test coverage, it will be disabled later on
@@ -26,7 +26,7 @@ ADD ci/logs-logentries.sh /root/
 
 EXPOSE 80
 
-RUN rm /etc/nginx/sites-enabled/default
+RUN rm /etc/nginx/conf.d/default.conf
 ADD ci/site.conf /etc/nginx/sites-enabled/site.conf
 ADD ci/log.conf /etc/nginx/conf.d/log.conf
 

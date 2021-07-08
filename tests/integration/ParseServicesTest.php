@@ -134,6 +134,7 @@ class ParseServicesTest extends TestCase
         $command = new ParseServices($client, []);
         $command->setLaravel($this->app);
         $this->assertEquals(ParseServices::class, get_class($command));
+        $this->expectException(ErrorException::class);
         $command->run(new \Symfony\Component\Console\Input\ArgvInput(), new \Symfony\Component\Console\Output\ConsoleOutput());
     }
 
@@ -158,6 +159,7 @@ class ParseServicesTest extends TestCase
         $command = new ParseServices($client, $this->mockConfig);
         $command->setLaravel($this->app);
         $this->assertEquals(ParseServices::class, get_class($command));
+        $this->expectException(app\Exceptions\DataFormatException::class);
         $command->run(new \Symfony\Component\Console\Input\ArgvInput([]), new \Symfony\Component\Console\Output\NullOutput());
 
         $this->assertEquals(2, count($container));
