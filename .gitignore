@@ -9,3 +9,4 @@ storage/oauth-public.key
 private.key
 public.key
 database/gateway.sqlite
+build/logs/clover.xml
