@@ -8,7 +8,7 @@ use App\Routing\RouteContract;
  * Class Request
  * @package App\Http
  */
-class Request extends \Illuminate\Http\Request
+class Request extends \Laravel\Lumen\Http\Request
 {
     /**
      * @var RouteContract
